@@ -1,7 +1,11 @@
 "use client"
-import { useParams } from "next/navigation"
+import { redirect, useParams } from "next/navigation"
+import { useSession } from "next-auth/react"
 
-export default function ClassHome() {
+function ClassHome() {
+    const { data: session, status, update } = useSession()
+    if (status !== "authenticated") redirect("/")
+
     // You have to do fetch here
     const classID = useParams<{classID: string}>()
     console.log(classID?.classID)
@@ -9,3 +13,5 @@ export default function ClassHome() {
         <h1>test</h1>
     )
 }
+
+export default ClassHome;

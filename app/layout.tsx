@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fira_Code } from "next/font/google";
 import "./globals.css";
+import AuthContext from './auth/AuthContext'
 
 const fira = Fira_Code({ subsets: ["latin"] });
 
@@ -16,7 +17,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${fira.className} dark`}>{children}</body>
+      <AuthContext>
+        <body className={`${fira.className} dark`}>{children}</body>
+      </AuthContext>
     </html>
   );
 }
