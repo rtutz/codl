@@ -58,3 +58,11 @@ model VerificationToken {
  
   @@id([identifier, token])
 }
+
+model Class {
+  id            String          @id @default(cuid())
+}
+
+model Project {
+  id            String          @id @default(cuid())
+}
