@@ -1,5 +1,4 @@
 import { ChevronLeftIcon, Cross1Icon, PlusIcon } from "@radix-ui/react-icons"
-
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -10,9 +9,30 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Link from "next/link"
 
+
+interface TeacherProject {
+    id: string;
+    name: string;
+    image: string;
+  }
+  
 
 export default function LoggedInHome() {
+    const teacherProjects: TeacherProject[] = [];
+    
+    // Call backend for projects
+    for (let i = 1; i <= 3; i++) {
+        const project: TeacherProject = {
+          id: `project${i}`,
+          name: `Project ${i}`,
+          image: `https://example.com/project${i}.jpg`
+        };
+        teacherProjects.push(project);
+    }
+
+
     return (
         <div>
             {/* Back button */}
@@ -34,14 +54,18 @@ export default function LoggedInHome() {
                     <Card className="p-5">
                             <CardContent className="space-y-6 gray">
                                 {/* Would be the individual class */}
-                                {[...Array(5)].map((_, i) => (
+                                {teacherProjects.map((item, i) => (
                                 <div className="flex justify-between items-center hover:text-white">
-                                    <Avatar>
-                                        <AvatarImage src="https://github.com/shadcn.png" />
-                                        <AvatarFallback>CN</AvatarFallback>
-                                    </Avatar>
-                                    <h1>Intro to Python</h1>
-                                    <Cross1Icon/>
+                                    <Link href={`/teach/${item.id}`}>
+                                        <Avatar>
+                                            <AvatarImage src="https://github.com/shadcn.png" />
+                                            <AvatarFallback>CN</AvatarFallback>
+                                        </Avatar>
+                                    </Link>
+                                    <Link href={`/teach/${item.id}`}>
+                                        <button>{item.name}</button>
+                                    </Link>
+                                    <button><Cross1Icon/></button>
                                 </div>
                                 ))}
                             </CardContent>
