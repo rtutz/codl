@@ -1,6 +1,7 @@
 "use client"
 import { redirect, useParams } from "next/navigation"
 import { useSession } from "next-auth/react"
+import { useRouter } from 'next/navigation'
 import { ChevronLeftIcon, Pencil1Icon, PersonIcon, PlusIcon} from "@radix-ui/react-icons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,10 @@ import {
     TableHeader,
     TableRow,
   } from "@/components/ui/table"
+import { Switch } from "@/components/ui/switch"
+import { MouseEvent } from "react"
+import { usePathname } from 'next/navigation'
+
 
 function ClassHome() {
     const { data: session, status, update } = useSession()
@@ -71,6 +76,14 @@ const invoices = [
       paymentMethod: "Credit Card",
     },
   ]
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const openProject = (e: MouseEvent, lessonId: string) => {
+    e.preventDefault();
+    router.push(`${pathname}/class1`);
+  }
    
 
     // You have to do fetch here
@@ -119,19 +132,19 @@ const invoices = [
                         <TableCaption>A list of your recent invoices.</TableCaption>
                         <TableHeader>
                             <TableRow>
-                            <TableHead className="w-[100px]">Invoice</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Method</TableHead>
-                            <TableHead className="text-right">Amount</TableHead>
+                            <TableHead className="w-[300px]">Title</TableHead>
+                            <TableHead>Due Date</TableHead>
+                            <TableHead>Submissions</TableHead>
+                            <TableHead className="text-right">Published</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {invoices.map((invoice) => (
-                            <TableRow key={invoice.invoice}>
+                            <TableRow key={invoice.invoice} onClick={(e) => openProject(e, invoice.invoice)}>
                                 <TableCell className="font-medium">{invoice.invoice}</TableCell>
                                 <TableCell>{invoice.paymentStatus}</TableCell>
                                 <TableCell>{invoice.paymentMethod}</TableCell>
-                                <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+                                <TableCell className="text-right"><Switch /></TableCell>
                             </TableRow>
                             ))}
                         </TableBody>
