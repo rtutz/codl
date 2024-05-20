@@ -9,8 +9,6 @@ import LoggedOutHome from "./LoggedOutHome"
 
 export default async function Home() {
   const session = await getServerSession(authOptions)
-  console.log(session)
-  console.log("this should be in terminal")
   if (session) {
     return (
       <>
