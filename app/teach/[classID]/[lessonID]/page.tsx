@@ -1,6 +1,7 @@
 "use client"
 
 import Lecture from "@/components/lecture"
+import MarkdownProvider from "@/providers/markdownProvider"
 
 export default function lesson() {
     return (
@@ -11,7 +12,9 @@ export default function lesson() {
             </div>
             
             <div className="flex-grow min-h-screen">
-                <Lecture/>
+                <MarkdownProvider>
+                    <Lecture/>
+                </MarkdownProvider>
             </div>
             
         </div>
