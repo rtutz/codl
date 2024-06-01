@@ -106,7 +106,7 @@ export default function LoggedInHome() {
                             <CardContent className="space-y-6 gray">
                                 {/* Would be the individual class */}
                                 {teacherProjects.map((item, i) => (
-                                <div className="flex justify-between items-center hover:text-white">
+                                <div className="flex justify-between items-center hover:text-white" key={i}>
                                     <Link href={`/teach/${item.id}`}>
                                         <Avatar>
                                             <AvatarImage src="https://github.com/shadcn.png" />
@@ -132,7 +132,7 @@ export default function LoggedInHome() {
                             <CardContent className="space-y-6 gray">
                                 {/* Would be the individual class */}
                                 {[...Array(5)].map((_, i) => (
-                                <div className="flex justify-between items-center hover:text-white">
+                                <div className="flex justify-between items-center hover:text-white" key={i}>
                                     <Avatar>
                                         <AvatarImage src="https://github.com/shadcn.png" />
                                         <AvatarFallback>CN</AvatarFallback>
