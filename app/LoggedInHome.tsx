@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, Cross1Icon, PlusIcon } from "@radix-ui/react-icons"
+import { Cross1Icon, PlusIcon } from "@radix-ui/react-icons"
 import { Button } from "@/components/ui/button"
 import {
     Card,
@@ -21,9 +21,8 @@ import Link from "next/link"
 
 import { getServerSession } from "next-auth"
 import { authOptions } from "../pages/api/auth/[...nextauth].js"
-import { getSession } from 'next-auth/react';
 import { redirect } from "next/navigation"
-
+import SignOutBtn from "@/components/signOutBtn"
 
 interface TeacherProject {
     id: string;
@@ -64,8 +63,6 @@ async function getClasses(user_id: string) {
 
 
 export default async function LoggedInHome() {
-    const teacherProjects: TeacherProject[] = [];
-
     const session = await getServerSession(authOptions);
     
     let user_id = ''
@@ -81,28 +78,12 @@ export default async function LoggedInHome() {
     const teacherClasses: ClassData[] = classesData.filter((item) => item.role === 'TEACHER');
     const studentClasses: ClassData[] = classesData.filter((item) => item.role === 'STUDENT');
 
-
-
-    // Call backend for projects
-    for (let i = 1; i <= 3; i++) {
-        const project: TeacherProject = {
-            id: `project${i}`,
-            name: `Project ${i}`,
-            image: `https://example.com/project${i}.jpg`
-        };
-        teacherProjects.push(project);
-    }
-
-
     return (
         <div>
             {/* Back button */}
-            <div className="top-0 left-0 m-10">
-                <Button>
-                    <ChevronLeftIcon className="h-4 w-4" />
-                    Logout
-                </Button>
-            </div>
+            <SignOutBtn/>
+
+
 
             {/* Div for center materials */}
             <div className="flex flex-col items-center min-h-screen mt-10 w-full">
