@@ -1,5 +1,3 @@
-/* eslint-disable */
-// @ts-nocheck
 
 import LoggedInHome from "./LoggedInHome"
 import { getServerSession } from "next-auth"

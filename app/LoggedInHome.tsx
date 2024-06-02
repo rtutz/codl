@@ -1,14 +1,8 @@
-"use client"
-
 import { ChevronLeftIcon, Cross1Icon, PlusIcon } from "@radix-ui/react-icons"
 import { Button } from "@/components/ui/button"
 import {
     Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+    CardContent
 } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -19,29 +13,49 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-  } from "@/components/ui/dialog"
-  import { Input } from "@/components/ui/input"
-  import { Label } from "@/components/ui/label"
-  
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+
 import Link from "next/link"
+
+import { getServerSession } from "next-auth"
+import { authOptions } from "../pages/api/auth/[...nextauth].js"
+import { getSession } from 'next-auth/react';
 
 
 interface TeacherProject {
     id: string;
     name: string;
     image: string;
-  }
-  
+}
 
-export default function LoggedInHome() {
+
+export default async function LoggedInHome() {
     const teacherProjects: TeacherProject[] = [];
-    
+
+    const session = await getServerSession(authOptions);
+    // console.log(session);
+    if (session) {
+        console.log(session);
+    }
+
+    // const data = await fetch(`${process.env.LOCAL_PATH}/api/getClasses`, { 
+    //     method: 'POST',
+    //     headers: {
+    //         'Content-Type': 'application/json',
+    //     },
+    //     // body: JSON.stringify(),
+    //     cache: "no-store" 
+    // });
+    // console.log(data);
+
     // Call backend for projects
     for (let i = 1; i <= 3; i++) {
         const project: TeacherProject = {
-          id: `project${i}`,
-          name: `Project ${i}`,
-          image: `https://example.com/project${i}.jpg`
+            id: `project${i}`,
+            name: `Project ${i}`,
+            image: `https://example.com/project${i}.jpg`
         };
         teacherProjects.push(project);
     }
@@ -60,14 +74,14 @@ export default function LoggedInHome() {
             {/* Div for center materials */}
             <div className="flex flex-col items-center min-h-screen mt-10  w-full">
 
-                <div  className="w-1/2">
+                <div className="w-1/2">
                     <div className="flex justify-between items-center mb-4">
                         <h1 className="font-semibold text-2xl">Classes I'm Teaching</h1>
 
-                         {/* Button for Creating New Class */}
-                         <Dialog>
+                        {/* Button for Creating New Class */}
+                        <Dialog>
                             <DialogTrigger asChild>
-                                <Button> <PlusIcon className="h-4 w-4"/>Create New Class</Button>
+                                <Button> <PlusIcon className="h-4 w-4" />Create New Class</Button>
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-[700px]">
                                 <DialogHeader>
@@ -81,21 +95,21 @@ export default function LoggedInHome() {
                                         <Label htmlFor="name">
                                             Class Display Name
                                         </Label>
-                                        <Input id="name" value=""/>
+                                        <Input id="name" value="" />
                                     </div>
 
                                     <div className="flex flex-col space-y-4">
                                         <Label htmlFor="username">
                                             Unique Class Identifier
                                         </Label>
-                                        <Input id="id" value=""/>
+                                        <Input id="id" value="" />
                                     </div>
                                 </div>
                                 <DialogFooter>
                                     <Button type="submit">Save changes</Button>
                                 </DialogFooter>
                             </DialogContent>
-                         </Dialog>
+                        </Dialog>
 
 
 
@@ -103,9 +117,9 @@ export default function LoggedInHome() {
 
                     </div>
                     <Card className="p-5">
-                            <CardContent className="space-y-6 gray">
-                                {/* Would be the individual class */}
-                                {teacherProjects.map((item, i) => (
+                        <CardContent className="space-y-6 gray">
+                            {/* Would be the individual class */}
+                            {teacherProjects.map((item, i) => (
                                 <div className="flex justify-between items-center hover:text-white" key={i}>
                                     <Link href={`/teach/${item.id}`}>
                                         <Avatar>
@@ -116,32 +130,32 @@ export default function LoggedInHome() {
                                     <Link href={`/teach/${item.id}`}>
                                         <button>{item.name}</button>
                                     </Link>
-                                    <button><Cross1Icon/></button>
+                                    <button><Cross1Icon /></button>
                                 </div>
-                                ))}
-                            </CardContent>
+                            ))}
+                        </CardContent>
                     </Card>
                 </div>
 
-                <div  className="w-1/2 mt-20">
+                <div className="w-1/2 mt-20">
                     <div className="flex justify-between items-center mb-4">
                         <h1 className="font-semibold text-2xl">Classes I'm Enrolled In</h1>
-                        <Button> <PlusIcon className="h-4 w-4"/>Join New Class</Button>
+                        <Button> <PlusIcon className="h-4 w-4" />Join New Class</Button>
                     </div>
                     <Card className="p-5">
-                            <CardContent className="space-y-6 gray">
-                                {/* Would be the individual class */}
-                                {[...Array(5)].map((_, i) => (
+                        <CardContent className="space-y-6 gray">
+                            {/* Would be the individual class */}
+                            {[...Array(5)].map((_, i) => (
                                 <div className="flex justify-between items-center hover:text-white" key={i}>
                                     <Avatar>
                                         <AvatarImage src="https://github.com/shadcn.png" />
                                         <AvatarFallback>CN</AvatarFallback>
                                     </Avatar>
                                     <h1>Intro to Python</h1>
-                                    <Cross1Icon/>
+                                    <Cross1Icon />
                                 </div>
-                                ))}
-                            </CardContent>
+                            ))}
+                        </CardContent>
                     </Card>
                 </div>
             </div>
