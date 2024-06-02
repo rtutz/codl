@@ -1,4 +1,5 @@
 import { useMarkdown } from "@/providers/markdownProvider"
+import { useEffect } from "react";
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import {
@@ -7,8 +8,14 @@ import {
   prism,
 } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
-export default function Lecture() {
+export default function Lecture({lectureContent}: {lectureContent: string})  {
+    console.log(lectureContent)
+
     const { markdown, setMarkdown } = useMarkdown();
+    
+    useEffect(() => {
+        setMarkdown({markdown: lectureContent});
+    }, [lectureContent]);
 
     return (
         <>

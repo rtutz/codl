@@ -80,7 +80,7 @@ function ClassHome() {
 
     const openProject = (e: MouseEvent, lessonId: string) => {
         e.preventDefault();
-        router.push(`${pathname}/class1`);
+        router.push(`${pathname}/${lessonId}`);
     }
 
     const classID = useParams<{ classID: string }>();
@@ -151,7 +151,6 @@ function ClassHome() {
                 </Button>
                 <Card>
                     <Table>
-                        <TableCaption>A list of your recent lessons.</TableCaption>
                         <TableHeader>
                             <TableRow>
                                 <TableHead className="w-[300px]">Title</TableHead>
@@ -177,12 +176,7 @@ function ClassHome() {
                                 </TableRow>
                             ))}
                         </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TableCell colSpan={3}>Total</TableCell>
-                                <TableCell className="text-right">$2,500.00</TableCell>
-                            </TableRow>
-                        </TableFooter>
+                        
                     </Table>
                 </Card>
             </div>
