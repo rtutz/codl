@@ -1,36 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
-  id            String    @id @default(cuid())
+  id            String          @id @default(cuid())
+  email         String          @unique
   name          String?
-  email         String    @unique
+  createdAt     DateTime        @default(now())
   emailVerified DateTime?
   image         String?
+  updatedAt     DateTime        @updatedAt
   accounts      Account[]
   sessions      Session[]
-
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
   UserClassMap  UserClassMap[]
   UserLessonMap UserLessonMap[]
 }
 
-// Many to many relation between users and class
-// NOTE: A user must have a role in that class
 model UserClassMap {
-  user    User   @relation(fields: [userID], references: [id])
   userID  String
-  class   Class  @relation(fields: [classID], references: [id])
   classID Int
-
-  role Role
+  role    Role
+  class   Class  @relation(fields: [classID], references: [id])
+  user    User   @relation(fields: [userID], references: [id])
 
   @@id([userID, classID])
 }
@@ -43,28 +39,25 @@ model Class {
 }
 
 model UserLessonMap {
-  user     User   @relation(fields: [userID], references: [id])
-  userID   String
-  lesson   Lesson @relation(fields: [lessonID], references: [id])
-  lessonID String
-
-  // Extra info 
+  userID    String
+  lessonID  String
   submitted Boolean
+  lesson    Lesson  @relation(fields: [lessonID], references: [id])
+  user      User    @relation(fields: [userID], references: [id])
 
   @@id([userID, lessonID])
 }
 
 model Lesson {
-  id             String      @id @default(cuid())
-  lectureContent String
-  class          Class       @relation(fields: [classId], references: [id])
-  published      Boolean
+  id             String          @id @unique @default(dbgenerated("gen_random_uuid()"))
   classId        Int
-  testCases      TestCases[]
+  published      Boolean
+  lectureContent String
+  dueDate        DateTime?       @default(now()) @updatedAt @db.Timestamptz(6)
+  class          Class           @relation(fields: [classId], references: [id])
   quizzes        Quiz[]
-
-  dueDate       DateTime        @updatedAt
-  UserLessonMap UserLessonMap[]
+  testCases      TestCases[]
+  UserLessonMap  UserLessonMap[]
 }
 
 model Quiz {
@@ -72,16 +65,16 @@ model Quiz {
   question String
   choices  String
   answer   String
-  lesson   Lesson @relation(fields: [lessonId], references: [id])
   lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
 }
 
 model TestCases {
   id       Int    @id @default(autoincrement())
   input    String
   output   String
-  lesson   Lesson @relation(fields: [lessonId], references: [id])
   lessonId String
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
 }
 
 model Account {
@@ -96,11 +89,9 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
 }
@@ -109,10 +100,9 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 model VerificationToken {
