@@ -2,7 +2,7 @@
 import { redirect, useParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation'
-import { ChevronLeftIcon, Pencil1Icon, PersonIcon, PlusIcon} from "@radix-ui/react-icons"
+import { ChevronLeftIcon, Pencil1Icon, PersonIcon, PlusIcon } from "@radix-ui/react-icons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,78 +22,100 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-  } from "@/components/ui/table"
+} from "@/components/ui/table"
 import { Switch } from "@/components/ui/switch"
-import { MouseEvent } from "react"
+import { MouseEvent, useEffect, useState } from "react"
 import { usePathname } from 'next/navigation'
+
+interface Lesson {
+    classId: number;
+    dueDate: Date;
+    id: string;
+    lectureContent: string;
+    name: string;
+    published: boolean;
+  }
+
+async function getLessons(class_id: string | undefined) {
+    try {
+        if (!class_id) {
+            throw new Error('class_id is required');
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/getLessons`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ class_id }),
+            cache: 'no-store',
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch data');
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+}
+
+function formatDate(date: Date): string {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString(undefined, options);
+}
 
 
 function ClassHome() {
-    const { data: session, status, update } = useSession()
+    const { data: session, status, update } = useSession();
+    const [lessons, setLessons] = useState<Lesson[]>([]);
+
+
     if (status !== "authenticated") redirect("/")
-         
-const invoices = [
-    {
-      invoice: "INV001",
-      paymentStatus: "Paid",
-      totalAmount: "$250.00",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoice: "INV002",
-      paymentStatus: "Pending",
-      totalAmount: "$150.00",
-      paymentMethod: "PayPal",
-    },
-    {
-      invoice: "INV003",
-      paymentStatus: "Unpaid",
-      totalAmount: "$350.00",
-      paymentMethod: "Bank Transfer",
-    },
-    {
-      invoice: "INV004",
-      paymentStatus: "Paid",
-      totalAmount: "$450.00",
-      paymentMethod: "Credit Card",
-    },
-    {
-      invoice: "INV005",
-      paymentStatus: "Paid",
-      totalAmount: "$550.00",
-      paymentMethod: "PayPal",
-    },
-    {
-      invoice: "INV006",
-      paymentStatus: "Pending",
-      totalAmount: "$200.00",
-      paymentMethod: "Bank Transfer",
-    },
-    {
-      invoice: "INV007",
-      paymentStatus: "Unpaid",
-      totalAmount: "$300.00",
-      paymentMethod: "Credit Card",
-    },
-  ]
 
-  const router = useRouter();
-  const pathname = usePathname();
+    const router = useRouter();
+    const pathname = usePathname();
 
-  const openProject = (e: MouseEvent, lessonId: string) => {
-    e.preventDefault();
-    router.push(`${pathname}/class1`);
-  }
-   
+    const openProject = (e: MouseEvent, lessonId: string) => {
+        e.preventDefault();
+        router.push(`${pathname}/class1`);
+    }
 
-    // You have to do fetch here
-    const classID = useParams<{classID: string}>()
-    console.log(classID?.classID)
+    const classID = useParams<{ classID: string }>();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (classID) {
+              const lessonsData = await getLessons(classID?.classID);
+              const transformedData: Lesson[] = lessonsData.map((lesson: any) => ({
+                ...lesson,
+                dueDate: new Date(lesson.dueDate), // Transform dueDate to a Date object
+              }));
+
+              setLessons(transformedData);
+            }
+          };
+      
+          fetchData();
+
+    }, [])
+
+    const switchPublish = (id: string, checked: boolean) => {
+        const updatedLessons = lessons.map((lesson) =>
+          lesson.id === id ? { ...lesson, published: checked } : lesson
+        );
+        setLessons(updatedLessons);
+
+        // Add logic to update the database 
+      };
+
     return (
         <div>
             <div className="flex items-center justify-start top-0 left-0 m-10">
-                
-                <ChevronLeftIcon className="h-4 w-4" color="#ADADAD"/>
+
+                <ChevronLeftIcon className="h-4 w-4" color="#ADADAD" />
                 <span className="gray text-sm">Back to all classes</span>
             </div>
             {/* header */}
@@ -105,59 +127,66 @@ const invoices = [
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col justify-start">
-                        <h1 className="text-3xl">Intro to Python</h1>
+                            <h1 className="text-3xl">Intro to Python</h1>
                             <span className="text-xs">6473338512</span>
                         </div>
                     </div>
                     <div>
                         <button>
-                            <Pencil1Icon/>
+                            <Pencil1Icon />
                         </button>
-                       
+
                     </div>
-    
+
                 </div>
 
                 {/* Manage Team Members */}
                 <button className="flex items-center space-x-4 text-xs gray max-w-fit">
-                    <PersonIcon/> <span>Manage Class Members</span>
+                    <PersonIcon /> <span>Manage Class Members</span>
                 </button>
 
                 {/* Create new Project */}
                 <Button className="max-w-fit mt-10">
-                    <PlusIcon/><span className="mx-4">Create New Lesson</span>
+                    <PlusIcon /><span className="mx-4">Create New Lesson</span>
                 </Button>
                 <Card>
                     <Table>
-                        <TableCaption>A list of your recent invoices.</TableCaption>
+                        <TableCaption>A list of your recent lessons.</TableCaption>
                         <TableHeader>
                             <TableRow>
-                            <TableHead className="w-[300px]">Title</TableHead>
-                            <TableHead>Due Date</TableHead>
-                            <TableHead>Submissions</TableHead>
-                            <TableHead className="text-right">Published</TableHead>
+                                <TableHead className="w-[300px]">Title</TableHead>
+                                <TableHead>Due Date</TableHead>
+                                <TableHead>Submissions</TableHead>
+                                <TableHead className="text-right">Published</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {invoices.map((invoice) => (
-                            <TableRow key={invoice.invoice} onClick={(e) => openProject(e, invoice.invoice)}>
-                                <TableCell className="font-medium">{invoice.invoice}</TableCell>
-                                <TableCell>{invoice.paymentStatus}</TableCell>
-                                <TableCell>{invoice.paymentMethod}</TableCell>
-                                <TableCell className="text-right"><Switch /></TableCell>
-                            </TableRow>
+                            {lessons.map((lesson) => (
+                                <TableRow key={lesson.id} onClick={(e) => openProject(e, lesson.id)}>
+                                    <TableCell className="font-medium">{lesson.name}</TableCell>
+                                    <TableCell>{formatDate(lesson.dueDate)}</TableCell>
+                                    <TableCell>5/4</TableCell>
+                                    <TableCell className="text-right">
+                                        <Switch checked={lesson.published} 
+                                            onCheckedChange={(checked) => {
+                                                switchPublish(lesson.id, checked);
+                                            }}
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    </TableCell>
+                                </TableRow>
                             ))}
                         </TableBody>
                         <TableFooter>
                             <TableRow>
-                            <TableCell colSpan={3}>Total</TableCell>
-                            <TableCell className="text-right">$2,500.00</TableCell>
+                                <TableCell colSpan={3}>Total</TableCell>
+                                <TableCell className="text-right">$2,500.00</TableCell>
                             </TableRow>
                         </TableFooter>
                     </Table>
                 </Card>
             </div>
-            
+
 
 
             {/* Who's Coding? */}

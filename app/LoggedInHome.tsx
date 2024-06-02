@@ -37,36 +37,36 @@ interface ClassData {
     className: string;
     id: number;
     name: string;
-  }
-  
+}
+
 
 async function getClasses(user_id: string) {
     try {
-        const response = await fetch(`${process.env.LOCAL_PATH}/api/getClasses`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ user_id }),
-          cache: 'no-store',
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/getClasses`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_id }),
+            cache: 'no-store',
         });
-    
+
         if (!response.ok) {
-          throw new Error('Failed to fetch data');
+            throw new Error('Failed to fetch data');
         }
-    
+
         return response.json();
-      } catch (error) {
+    } catch (error) {
         console.error('Error:', error);
-      }
+    }
 }
 
 
 export default async function LoggedInHome() {
     const session = await getServerSession(authOptions);
-    
+
     let user_id = ''
-    
+
     if (session) {
         user_id = session.user.id
     } else {
@@ -81,7 +81,7 @@ export default async function LoggedInHome() {
     return (
         <div>
             {/* Back button */}
-            <SignOutBtn/>
+            <SignOutBtn />
 
 
 

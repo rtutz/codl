@@ -15,9 +15,7 @@ export default async function handler(
     if (req.method === 'POST') {
         try {
             const userID: string = req.body.user_id;
-            
-            console.log("user id received: ", userID);
-            
+                        
             const userClassData = await client.userClassMap.findMany({
                 where: {
                     userID: userID
