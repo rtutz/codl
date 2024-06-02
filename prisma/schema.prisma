@@ -50,6 +50,7 @@ model UserLessonMap {
 
 model Lesson {
   id             String          @id @unique @default(dbgenerated("gen_random_uuid()"))
+  name           String
   classId        Int
   published      Boolean
   lectureContent String
