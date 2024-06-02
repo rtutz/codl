@@ -22,6 +22,7 @@ import Link from "next/link"
 import { getServerSession } from "next-auth"
 import { authOptions } from "../pages/api/auth/[...nextauth].js"
 import { getSession } from 'next-auth/react';
+import { redirect } from "next/navigation"
 
 
 interface TeacherProject {
@@ -30,25 +31,57 @@ interface TeacherProject {
     image: string;
 }
 
+interface ClassData {
+    userID: string;
+    classID: number;
+    role: 'TEACHER' | 'STUDENT';
+    className: string;
+    id: number;
+    name: string;
+  }
+  
+
+async function getClasses(user_id: string) {
+    try {
+        const response = await fetch(`${process.env.LOCAL_PATH}/api/getClasses`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ user_id }),
+          cache: 'no-store',
+        });
+    
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+    
+        return response.json();
+      } catch (error) {
+        console.error('Error:', error);
+      }
+}
+
 
 export default async function LoggedInHome() {
     const teacherProjects: TeacherProject[] = [];
 
     const session = await getServerSession(authOptions);
-    // console.log(session);
+    
+    let user_id = ''
+    
     if (session) {
-        console.log(session);
+        user_id = session.user.id
+    } else {
+        redirect('/');
     }
 
-    // const data = await fetch(`${process.env.LOCAL_PATH}/api/getClasses`, { 
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //     },
-    //     // body: JSON.stringify(),
-    //     cache: "no-store" 
-    // });
-    // console.log(data);
+    const classesData: ClassData[] = await getClasses(user_id);
+
+    const teacherClasses: ClassData[] = classesData.filter((item) => item.role === 'TEACHER');
+    const studentClasses: ClassData[] = classesData.filter((item) => item.role === 'STUDENT');
+
+
 
     // Call backend for projects
     for (let i = 1; i <= 3; i++) {
@@ -72,7 +105,7 @@ export default async function LoggedInHome() {
             </div>
 
             {/* Div for center materials */}
-            <div className="flex flex-col items-center min-h-screen mt-10  w-full">
+            <div className="flex flex-col items-center min-h-screen mt-10 w-full">
 
                 <div className="w-1/2">
                     <div className="flex justify-between items-center mb-4">
@@ -111,15 +144,11 @@ export default async function LoggedInHome() {
                             </DialogContent>
                         </Dialog>
 
-
-
-
-
                     </div>
                     <Card className="p-5">
-                        <CardContent className="space-y-6 gray">
+                        <CardContent className="gray p-0 space-y-6">
                             {/* Would be the individual class */}
-                            {teacherProjects.map((item, i) => (
+                            {teacherClasses.map((item, i) => (
                                 <div className="flex justify-between items-center hover:text-white" key={i}>
                                     <Link href={`/teach/${item.id}`}>
                                         <Avatar>
@@ -145,14 +174,18 @@ export default async function LoggedInHome() {
                     <Card className="p-5">
                         <CardContent className="space-y-6 gray">
                             {/* Would be the individual class */}
-                            {[...Array(5)].map((_, i) => (
+                            {studentClasses.map((item, i) => (
                                 <div className="flex justify-between items-center hover:text-white" key={i}>
-                                    <Avatar>
-                                        <AvatarImage src="https://github.com/shadcn.png" />
-                                        <AvatarFallback>CN</AvatarFallback>
-                                    </Avatar>
-                                    <h1>Intro to Python</h1>
-                                    <Cross1Icon />
+                                    <Link href={`/teach/${item.id}`}>
+                                        <Avatar>
+                                            <AvatarImage src="https://github.com/shadcn.png" />
+                                            <AvatarFallback>CN</AvatarFallback>
+                                        </Avatar>
+                                    </Link>
+                                    <Link href={`/teach/${item.id}`}>
+                                        <button>{item.name}</button>
+                                    </Link>
+                                    <button><Cross1Icon /></button>
                                 </div>
                             ))}
                         </CardContent>

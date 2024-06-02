@@ -14,16 +14,30 @@ export default async function handler(
 
     if (req.method === 'POST') {
         try {
-            const userID: string = req.body;
+            const userID: string = req.body.user_id;
             
             console.log("user id received: ", userID);
-
-            const data = await client.userLessonMap.findMany({
+            
+            const userClassData = await client.userClassMap.findMany({
                 where: {
                     userID: userID
                 }
             })
-            return res.status(200).json(data)
+        
+            const classData = await client.class.findMany();
+
+            // This is just a SQL inner join since prisma does not support JOIN
+            const joinedData = userClassData.map(userClass => {
+                const matchingClass = classData.find(cls => cls.id === userClass.classID);
+                return {
+                  ...userClass,
+                  className: matchingClass ? matchingClass.name : null,
+                  ...matchingClass
+                };
+              });
+
+
+            return res.status(200).json(joinedData)
     
         } catch (error) {
             console.error(error);
