@@ -151,7 +151,7 @@ export default function LoggedInHome() {
 
     return (
         <div>
-            {showAlert && <ErrorUI message={"The given class ID do not exist."} />}
+            {showAlert && <ErrorUI message={"The given class ID do not exist or you are already teaching this class."} />}
 
             {/* Back button */}
             <SignOutBtn />
