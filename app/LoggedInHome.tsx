@@ -1,3 +1,9 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+
 import { Cross1Icon, PlusIcon } from "@radix-ui/react-icons"
 import { Button } from "@/components/ui/button"
 import {
@@ -5,24 +11,20 @@ import {
     CardContent
 } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 
 import Link from "next/link"
 
-import { getServerSession } from "next-auth"
-import { authOptions } from "../pages/api/auth/[...nextauth].js"
-import { redirect } from "next/navigation"
 import SignOutBtn from "@/components/signOutBtn"
+import type { DefaultSession } from 'next-auth';
+import NewClassBtn from '@/components/newClassBtn';
+
+declare module 'next-auth' {
+  interface Session {
+    user: DefaultSession['user'] & {
+      id: string;
+    };
+  }
+}
 
 interface TeacherProject {
     id: string;
@@ -62,21 +64,32 @@ async function getClasses(user_id: string) {
 }
 
 
-export default async function LoggedInHome() {
-    const session = await getServerSession(authOptions);
+export default function LoggedInHome() {
+    const { data: session } = useSession();
+    const router = useRouter();
+    const [teacherClasses, setTeacherClasses] = useState<ClassData[]>([]);
+    const [studentClasses, setStudentClasses] = useState<ClassData[]>([]);
+    const [newClassName, setNewClassName] = useState<string>('');
 
-    let user_id = ''
+    useEffect(() => {
+        const fetchData = async () => {
+            if (session) {
+                const classesData: ClassData[] = await getClasses(session?.user?.id);
+                const teacherClasses = classesData.filter((item) => item.role === 'TEACHER');
+                const studentClasses = classesData.filter((item) => item.role === 'STUDENT');
+                setTeacherClasses(teacherClasses);
+                setStudentClasses(studentClasses);
+            } else {
+                router.push('/');
+            }
+        };
 
-    if (session) {
-        user_id = session.user.id
-    } else {
-        redirect('/');
+        fetchData();
+    }, [session, router]);
+
+    if (!session) {
+        return null; // or render a loading state
     }
-
-    const classesData: ClassData[] = await getClasses(user_id);
-
-    const teacherClasses: ClassData[] = classesData.filter((item) => item.role === 'TEACHER');
-    const studentClasses: ClassData[] = classesData.filter((item) => item.role === 'STUDENT');
 
     return (
         <div>
@@ -92,38 +105,8 @@ export default async function LoggedInHome() {
                     <div className="flex justify-between items-center mb-4">
                         <h1 className="font-semibold text-2xl">Classes I'm Teaching</h1>
 
-                        {/* Button for Creating New Class */}
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button> <PlusIcon className="h-4 w-4" />Create New Class</Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[700px]">
-                                <DialogHeader>
-                                    <DialogTitle>Create New Class</DialogTitle>
-                                    <DialogDescription>
-                                        Create a new class here. You must provide a unique name for this class.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="flex flex-col space-y-8">
-                                    <div className="flex flex-col space-y-4">
-                                        <Label htmlFor="name">
-                                            Class Display Name
-                                        </Label>
-                                        <Input id="name" value="" />
-                                    </div>
+                        <NewClassBtn newClassName={newClassName} setNewClassName={setNewClassName}/>
 
-                                    <div className="flex flex-col space-y-4">
-                                        <Label htmlFor="username">
-                                            Unique Class Identifier
-                                        </Label>
-                                        <Input id="id" value="" />
-                                    </div>
-                                </div>
-                                <DialogFooter>
-                                    <Button type="submit">Save changes</Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
 
                     </div>
                     <Card className="p-5">
