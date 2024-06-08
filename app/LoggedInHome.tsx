@@ -42,12 +42,11 @@ interface ClassData {
 
 async function getClasses(user_id: string) {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/getClasses`, {
-            method: 'POST',
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/class?user_id=${user_id}`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ user_id }),
             cache: 'no-store',
         });
 
