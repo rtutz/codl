@@ -19,15 +19,21 @@ export default async function handler(
             const name: string = req.body?.name;
             const userID: string = req.body?.userID;
             const role = req.body?.role;
-            const classID = nanoid(5);
+            const classID = req.body?.classID || nanoid(5);
 
-            const data = await client.class.create({
-                data: {
-                    id: classID,
-                    name: name
-                }
-            })
+            const returnValue = {
+                id: classID,
+                name: name
+            }
+            
+            if (role === 'TEACHER') {
+                const data = await client.class.create({
+                    data: returnValue
+                })
+            }
 
+            console.log(role, classID);
+            
             const updatedUserClassMap = await client.userClassMap.create({
                 data: {
                     userID: userID,
@@ -35,7 +41,7 @@ export default async function handler(
                     role: role,
                 }
             })
-            res.status(200).json(data);
+            res.status(200).json(returnValue);
     
         } catch (error) {
             console.error(error);

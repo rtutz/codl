@@ -3,27 +3,25 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-
-import { Cross1Icon, PlusIcon } from "@radix-ui/react-icons"
-import { Button } from "@/components/ui/button"
+import { Cross1Icon } from "@radix-ui/react-icons"
 import {
     Card,
     CardContent
 } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
 import Link from "next/link"
-
 import SignOutBtn from "@/components/signOutBtn"
 import type { DefaultSession } from 'next-auth';
 import NewClassBtn from '@/components/newClassBtn';
+import JoinClassBtn from '@/components/joinClassBtn';
+import ErrorUI from '@/components/error';
 
 declare module 'next-auth' {
-  interface Session {
-    user: DefaultSession['user'] & {
-      id: string;
-    };
-  }
+    interface Session {
+        user: DefaultSession['user'] & {
+            id: string;
+        };
+    }
 }
 
 interface TeacherProject {
@@ -75,18 +73,20 @@ export default function LoggedInHome() {
     const [teacherClasses, setTeacherClasses] = useState<ClassData[]>([]);
     const [studentClasses, setStudentClasses] = useState<ClassData[]>([]);
     const [newClassName, setNewClassName] = useState<string>('');
+    const [classID, setClassID] = useState<string>('');
+    const [showAlert, setShowAlert] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchData = async () => {
             if (session) {
                 const classesData: RawClassData[] = await getClasses(session?.user?.id);
                 const teacherClasses = classesData
-                .filter((item) => item.role === 'TEACHER')
-                .map(({ id, name }) => ({ id, name }));
-              
-              const studentClasses = classesData
-                .filter((item) => item.role === 'STUDENT')
-                .map(({ id, name }) => ({ id, name }));
+                    .filter((item) => item.role === 'TEACHER')
+                    .map(({ id, name }) => ({ id, name }));
+
+                const studentClasses = classesData
+                    .filter((item) => item.role === 'STUDENT')
+                    .map(({ id, name }) => ({ id, name }));
                 setTeacherClasses(teacherClasses);
                 setStudentClasses(studentClasses);
             } else {
@@ -97,19 +97,52 @@ export default function LoggedInHome() {
         fetchData();
     }, [session, router]);
 
+    useEffect(() => {
+        let timeout: ReturnType<typeof setTimeout> | undefined;
+        if (showAlert) {
+            timeout = setTimeout(() => {
+                setShowAlert(false);
+            }, 5000);
+        }
+        return () => clearTimeout(timeout);
+    }, [showAlert]);
+
     async function submitNewClass() {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/postClass`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name:newClassName, userID: session?.user?.id, role: 'TEACHER' }),
+            body: JSON.stringify({ name: newClassName, userID: session?.user?.id, role: 'TEACHER' }),
             cache: 'no-store',
         });
 
         const responseData = await response.json();
+        setNewClassName('');
         setTeacherClasses([...teacherClasses, responseData]);
-        console.log(teacherClasses);
+    }
+
+    async function submitJoinClass() {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/postClass`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userID: session?.user?.id, role: 'STUDENT', classID: classID }),
+            cache: 'no-store',
+        });
+
+        if (!response.ok) {
+            console.log("oops");
+            setShowAlert(true);
+            return;
+        } else {
+            const responseData = await response.json();
+            setClassID('');
+            setStudentClasses([...studentClasses, responseData]);
+        }
+
+
     }
 
     if (!session) {
@@ -118,6 +151,8 @@ export default function LoggedInHome() {
 
     return (
         <div>
+            {showAlert && <ErrorUI message={"The given class ID do not exist."} />}
+
             {/* Back button */}
             <SignOutBtn />
 
@@ -130,7 +165,7 @@ export default function LoggedInHome() {
                     <div className="flex justify-between items-center mb-4">
                         <h1 className="font-semibold text-2xl">Classes I'm Teaching</h1>
 
-                        <NewClassBtn newClassName={newClassName} setNewClassName={setNewClassName} submitNewClass={submitNewClass}/>
+                        <NewClassBtn newClassName={newClassName} setNewClassName={setNewClassName} submitNewClass={submitNewClass} />
 
 
                     </div>
@@ -158,7 +193,7 @@ export default function LoggedInHome() {
                 <div className="w-1/2 mt-20">
                     <div className="flex justify-between items-center mb-4">
                         <h1 className="font-semibold text-2xl">Classes I'm Enrolled In</h1>
-                        <Button> <PlusIcon className="h-4 w-4" />Join New Class</Button>
+                        <JoinClassBtn classID={classID} setClassID={setClassID} submitJoinClass={submitJoinClass} />
                     </div>
                     <Card className="p-5">
                         <CardContent className="space-y-6 gray">
