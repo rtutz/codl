@@ -42,12 +42,11 @@ async function getLessons(class_id: string | undefined) {
             throw new Error('class_id is required');
         }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/getLessons`, {
-            method: 'POST',
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson?class_id=${class_id}`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ class_id }),
             cache: 'no-store',
         });
 
