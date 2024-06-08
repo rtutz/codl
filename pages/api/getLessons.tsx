@@ -14,7 +14,7 @@ export default async function handler(
 
     if (req.method === 'POST') {
         try {
-            const classID: number = Number(req.body.class_id);
+            const classID: string = req.body.class_id;
                         
             const lessonsData = await client.lesson.findMany({
                 where: {

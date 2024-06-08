@@ -32,11 +32,16 @@ interface TeacherProject {
     image: string;
 }
 
-interface ClassData {
+interface RawClassData {
     userID: string;
     classID: number;
     role: 'TEACHER' | 'STUDENT';
     className: string;
+    id: number;
+    name: string;
+}
+
+interface ClassData {
     id: number;
     name: string;
 }
@@ -74,9 +79,14 @@ export default function LoggedInHome() {
     useEffect(() => {
         const fetchData = async () => {
             if (session) {
-                const classesData: ClassData[] = await getClasses(session?.user?.id);
-                const teacherClasses = classesData.filter((item) => item.role === 'TEACHER');
-                const studentClasses = classesData.filter((item) => item.role === 'STUDENT');
+                const classesData: RawClassData[] = await getClasses(session?.user?.id);
+                const teacherClasses = classesData
+                .filter((item) => item.role === 'TEACHER')
+                .map(({ id, name }) => ({ id, name }));
+              
+              const studentClasses = classesData
+                .filter((item) => item.role === 'STUDENT')
+                .map(({ id, name }) => ({ id, name }));
                 setTeacherClasses(teacherClasses);
                 setStudentClasses(studentClasses);
             } else {
@@ -86,6 +96,21 @@ export default function LoggedInHome() {
 
         fetchData();
     }, [session, router]);
+
+    async function submitNewClass() {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/postClass`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name:newClassName }),
+            cache: 'no-store',
+        });
+
+        const responseData = await response.json();
+        setTeacherClasses([...teacherClasses, responseData]);
+        console.log(teacherClasses);
+    }
 
     if (!session) {
         return null; // or render a loading state
@@ -105,7 +130,7 @@ export default function LoggedInHome() {
                     <div className="flex justify-between items-center mb-4">
                         <h1 className="font-semibold text-2xl">Classes I'm Teaching</h1>
 
-                        <NewClassBtn newClassName={newClassName} setNewClassName={setNewClassName}/>
+                        <NewClassBtn newClassName={newClassName} setNewClassName={setNewClassName} submitNewClass={submitNewClass}/>
 
 
                     </div>

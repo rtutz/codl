@@ -2,7 +2,6 @@ import { nanoid } from 'nanoid'
 
 import { NextApiRequest, NextApiResponse } from "next";
 import client from "@/prisma/client";
-
 export const dynamic = "force-dynamic";
 
 (BigInt.prototype as any).toJSON = function () {
@@ -16,16 +15,17 @@ export default async function handler(
 
     if (req.method === 'POST') {
         try {
-            const id = nanoid(5);
-                        
-            // const lessonsData = await client.lesson.findMany({
-            //     where: {
-            //         classId: classID
-            //     }
-            // })
-    
 
-            return res.status(200).json(lessonsData)
+            const name: string = req.body?.name;
+            const id = nanoid(5);
+
+            const data = await client.class.create({
+                data: {
+                    id: id,
+                    name: name
+                }
+            })
+            res.status(200).json(data);
     
         } catch (error) {
             console.error(error);

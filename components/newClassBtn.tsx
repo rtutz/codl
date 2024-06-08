@@ -18,13 +18,12 @@ import { Button } from "@/components/ui/button"
 interface ChildProps {
     newClassName: string;
     setNewClassName: React.Dispatch<React.SetStateAction<string>>;
+    submitNewClass: () => void
   }
 
-export default function NewClassBtn({newClassName, setNewClassName}: ChildProps) {
+export default function NewClassBtn({newClassName, setNewClassName, submitNewClass}: ChildProps) {
 
-    function submitNewClass() {
-        console.log(newClassName);
-    }
+
 
     return(
         <Dialog>
