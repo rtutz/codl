@@ -34,7 +34,7 @@ interface Lesson {
     lectureContent: string;
     name: string;
     published: boolean;
-  }
+}
 
 async function getLessons(class_id: string | undefined) {
     try {
@@ -88,36 +88,38 @@ function ClassHome() {
     useEffect(() => {
         const fetchData = async () => {
             if (classID) {
-              const lessonsData = await getLessons(classID?.classID);
-              const transformedData: Lesson[] = lessonsData.map((lesson: any) => ({
-                ...lesson,
-                dueDate: new Date(lesson.dueDate), // Transform dueDate to a Date object
-              }));
+                const lessonsData = await getLessons(classID?.classID);
+                const transformedData: Lesson[] = lessonsData.map((lesson: any) => ({
+                    ...lesson,
+                    dueDate: new Date(lesson.dueDate), // Transform dueDate to a Date object
+                }));
 
-              setLessons(transformedData);
+                setLessons(transformedData);
             }
-          };
-      
-          fetchData();
+        };
+
+        fetchData();
 
     }, [])
 
     const switchPublish = (id: string, checked: boolean) => {
         const updatedLessons = lessons.map((lesson) =>
-          lesson.id === id ? { ...lesson, published: checked } : lesson
+            lesson.id === id ? { ...lesson, published: checked } : lesson
         );
         setLessons(updatedLessons);
 
         // Add logic to update the database 
-      };
+    };
 
     return (
         <div>
-            <div className="flex items-center justify-start top-0 left-0 m-10">
+            <button className="flex items-center justify-start top-0 left-0 m-10" onClick={() => router.push('/')}>
+
 
                 <ChevronLeftIcon className="h-4 w-4" color="#ADADAD" />
                 <span className="gray text-sm">Back to all classes</span>
-            </div>
+
+            </button>
             {/* header */}
             <div className="flex flex-col w-3/4 mx-auto">
                 <div className="m-10 w-full flex justify-between items-center flex-shrink-0 mx-auto">
@@ -166,7 +168,7 @@ function ClassHome() {
                                     <TableCell>{formatDate(lesson.dueDate)}</TableCell>
                                     <TableCell>5/4</TableCell>
                                     <TableCell className="text-right">
-                                        <Switch checked={lesson.published} 
+                                        <Switch checked={lesson.published}
                                             onCheckedChange={(checked) => {
                                                 switchPublish(lesson.id, checked);
                                             }}
@@ -176,7 +178,7 @@ function ClassHome() {
                                 </TableRow>
                             ))}
                         </TableBody>
-                        
+
                     </Table>
                 </Card>
             </div>
