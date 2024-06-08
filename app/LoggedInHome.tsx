@@ -15,6 +15,7 @@ import type { DefaultSession } from 'next-auth';
 import NewClassBtn from '@/components/newClassBtn';
 import JoinClassBtn from '@/components/joinClassBtn';
 import ErrorUI from '@/components/error';
+import DisplayClasses from '@/components/displayClasses';
 
 declare module 'next-auth' {
     interface Session {
@@ -24,23 +25,17 @@ declare module 'next-auth' {
     }
 }
 
-interface TeacherProject {
-    id: string;
-    name: string;
-    image: string;
-}
-
 interface RawClassData {
     userID: string;
     classID: number;
     role: 'TEACHER' | 'STUDENT';
     className: string;
-    id: number;
+    id: string;
     name: string;
 }
 
 interface ClassData {
-    id: number;
+    id: string;
     name: string;
 }
 
@@ -108,7 +103,7 @@ export default function LoggedInHome() {
     }, [showAlert]);
 
     async function submitNewClass() {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/postClass`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/class`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -123,7 +118,7 @@ export default function LoggedInHome() {
     }
 
     async function submitJoinClass() {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/postClass`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/class`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -133,7 +128,6 @@ export default function LoggedInHome() {
         });
 
         if (!response.ok) {
-            console.log("oops");
             setShowAlert(true);
             return;
         } else {
@@ -141,8 +135,16 @@ export default function LoggedInHome() {
             setClassID('');
             setStudentClasses([...studentClasses, responseData]);
         }
+    }
 
+    function updateDisplayedClasses(classID: string) {
+        setTeacherClasses((prevTeacherClasses) =>
+            prevTeacherClasses.filter((cls) => cls.id !== classID)
+          );
 
+        setStudentClasses((prevStudentClasses) =>
+            prevStudentClasses.filter((cls) => cls.id !== classID)
+        );
     }
 
     if (!session) {
@@ -173,18 +175,11 @@ export default function LoggedInHome() {
                         <CardContent className="gray p-0 space-y-6">
                             {/* Would be the individual class */}
                             {teacherClasses.map((item, i) => (
-                                <div className="flex justify-between items-center hover:text-white" key={i}>
-                                    <Link href={`/teach/${item.id}`}>
-                                        <Avatar>
-                                            <AvatarImage src="https://github.com/shadcn.png" />
-                                            <AvatarFallback>CN</AvatarFallback>
-                                        </Avatar>
-                                    </Link>
-                                    <Link href={`/teach/${item.id}`}>
-                                        <button>{item.name}</button>
-                                    </Link>
-                                    <button><Cross1Icon /></button>
-                                </div>
+                                <DisplayClasses 
+                                classID={item.id} name={item.name} 
+                                deleteEntireClass={true} 
+                                userID={session?.user?.id}
+                                updateDisplayedClasses={updateDisplayedClasses}/>
                             ))}
                         </CardContent>
                     </Card>
@@ -199,18 +194,10 @@ export default function LoggedInHome() {
                         <CardContent className="space-y-6 gray">
                             {/* Would be the individual class */}
                             {studentClasses.map((item, i) => (
-                                <div className="flex justify-between items-center hover:text-white" key={i}>
-                                    <Link href={`/teach/${item.id}`}>
-                                        <Avatar>
-                                            <AvatarImage src="https://github.com/shadcn.png" />
-                                            <AvatarFallback>CN</AvatarFallback>
-                                        </Avatar>
-                                    </Link>
-                                    <Link href={`/teach/${item.id}`}>
-                                        <button>{item.name}</button>
-                                    </Link>
-                                    <button><Cross1Icon /></button>
-                                </div>
+                                 <DisplayClasses classID={item.id} name={item.name} 
+                                 deleteEntireClass={false} 
+                                 userID={session?.user?.id}
+                                 updateDisplayedClasses={updateDisplayedClasses}/>
                             ))}
                         </CardContent>
                     </Card>
