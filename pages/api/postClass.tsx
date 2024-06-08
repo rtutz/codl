@@ -17,12 +17,22 @@ export default async function handler(
         try {
 
             const name: string = req.body?.name;
-            const id = nanoid(5);
+            const userID: string = req.body?.userID;
+            const role = req.body?.role;
+            const classID = nanoid(5);
 
             const data = await client.class.create({
                 data: {
-                    id: id,
+                    id: classID,
                     name: name
+                }
+            })
+
+            const updatedUserClassMap = await client.userClassMap.create({
+                data: {
+                    userID: userID,
+                    classID: classID,
+                    role: role,
                 }
             })
             res.status(200).json(data);

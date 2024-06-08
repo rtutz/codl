@@ -103,7 +103,7 @@ export default function LoggedInHome() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name:newClassName }),
+            body: JSON.stringify({ name:newClassName, userID: session?.user?.id, role: 'TEACHER' }),
             cache: 'no-store',
         });
 
