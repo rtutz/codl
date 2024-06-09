@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from "next/link"
 import { Cross1Icon } from "@radix-ui/react-icons"
 import { useState } from "react"
-import ErrorUI from "./error"
+import AlertUI from "./error"
 
 interface IClass {
     classID: string,
@@ -14,9 +14,9 @@ interface IClass {
     updateDisplayedClasses: (classID: string) => void;
 }
 
-export default function DisplayClasses({classID, name, deleteEntireClass, userID, updateDisplayedClasses}: IClass) {
+export default function DisplayClasses({ classID, name, deleteEntireClass, userID, updateDisplayedClasses }: IClass) {
     const [showAlert, setShowAlert] = useState<boolean>(false);
-    {showAlert && <ErrorUI message={"The given class ID do not exist or you are already teaching this class."} />}
+    { showAlert && <AlertUI message={"The given class ID do not exist or you are already teaching this class."} /> }
 
     async function deleteClass() {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/class`, {
@@ -27,7 +27,7 @@ export default function DisplayClasses({classID, name, deleteEntireClass, userID
             body: JSON.stringify({ classID, deleteEntireClass, userID }),
             cache: 'no-store',
         })
-        
+
         if (!response.ok) {
             setShowAlert(true);
             return;
@@ -36,27 +36,27 @@ export default function DisplayClasses({classID, name, deleteEntireClass, userID
             console.log(responseData);
             updateDisplayedClasses(classID);
         }
-    
+
     }
 
-    
+
     return (
-    <>
-        {showAlert && <ErrorUI message={"There was an error deleting this project."} />}
-        <div className="flex justify-between items-center hover:text-white" key={classID}>
-            <Link href={`/teach/${classID}`}>
-                <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-            </Link>
-            <Link href={`/teach/${classID}`}>
-                <button>{name}</button>
-            </Link>
-            <button onClick={deleteClass}>
-                <Cross1Icon />
-            </button>
-        </div>
-    </>
+        <>
+            {showAlert && <AlertUI message={"There was an error deleting this project."} />}
+            <div className="flex justify-between items-center hover:text-white" key={classID}>
+                <Link href={`/teach/${classID}`}>
+                    <Avatar>
+                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                </Link>
+                <Link href={`/teach/${classID}`}>
+                    <button>{name}</button>
+                </Link>
+                <button onClick={deleteClass}>
+                    <Cross1Icon />
+                </button>
+            </div>
+        </>
     )
 }

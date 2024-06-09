@@ -11,7 +11,7 @@ import SignOutBtn from "@/components/signOutBtn"
 import type { DefaultSession } from 'next-auth';
 import NewClassBtn from '@/components/newClassBtn';
 import JoinClassBtn from '@/components/joinClassBtn';
-import ErrorUI from '@/components/error';
+import AlertUI from '@/components/error';
 import DisplayClasses from '@/components/displayClasses';
 
 declare module 'next-auth' {
@@ -136,7 +136,7 @@ export default function LoggedInHome() {
     function updateDisplayedClasses(classID: string) {
         setTeacherClasses((prevTeacherClasses) =>
             prevTeacherClasses.filter((cls) => cls.id !== classID)
-          );
+        );
 
         setStudentClasses((prevStudentClasses) =>
             prevStudentClasses.filter((cls) => cls.id !== classID)
@@ -149,7 +149,7 @@ export default function LoggedInHome() {
 
     return (
         <div>
-            {showAlert && <ErrorUI message={"The given class ID do not exist or you are already teaching this class."} />}
+            {showAlert && <AlertUI message={"The given class ID do not exist or you are already teaching this class."} />}
 
             {/* Back button */}
             <SignOutBtn />
@@ -171,11 +171,11 @@ export default function LoggedInHome() {
                         <CardContent className="gray p-0 space-y-6">
                             {/* Would be the individual class */}
                             {teacherClasses.map((item, i) => (
-                                <DisplayClasses 
-                                classID={item.id} name={item.name} 
-                                deleteEntireClass={true} 
-                                userID={session?.user?.id}
-                                updateDisplayedClasses={updateDisplayedClasses}/>
+                                <DisplayClasses
+                                    classID={item.id} name={item.name}
+                                    deleteEntireClass={true}
+                                    userID={session?.user?.id}
+                                    updateDisplayedClasses={updateDisplayedClasses} />
                             ))}
                         </CardContent>
                     </Card>
@@ -190,10 +190,10 @@ export default function LoggedInHome() {
                         <CardContent className="space-y-6 gray">
                             {/* Would be the individual class */}
                             {studentClasses.map((item, i) => (
-                                 <DisplayClasses classID={item.id} name={item.name} 
-                                 deleteEntireClass={false} 
-                                 userID={session?.user?.id}
-                                 updateDisplayedClasses={updateDisplayedClasses}/>
+                                <DisplayClasses classID={item.id} name={item.name}
+                                    deleteEntireClass={false}
+                                    userID={session?.user?.id}
+                                    updateDisplayedClasses={updateDisplayedClasses} />
                             ))}
                         </CardContent>
                     </Card>

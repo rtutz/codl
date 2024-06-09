@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 (BigInt.prototype as any).toJSON = function () {
     return this.toString();
-  };
+};
 
 export default async function handler(
     req: NextApiRequest,
@@ -16,15 +16,15 @@ export default async function handler(
         try {
             const lessonID = req.query.lesson_id ? (req.query.lesson_id as string) : undefined;
             const classID = req.query.class_id ? (req.query.class_id as string) : undefined;
-            
+
             if (lessonID) {
                 const lessonsData = await client.lesson.findUnique({
                     where: {
                         id: lessonID
                     }
                 })
-        
-    
+
+
                 return res.status(200).json(lessonsData)
             }
 
@@ -39,14 +39,14 @@ export default async function handler(
             }
 
 
-            
+
             return res.status(500).json("Invalid endpoint.");
 
         } catch (error) {
             console.error(error);
             return res.status(500).json(error);
         }
-      } else if (req.method === 'POST') {
+    } else if (req.method === 'POST') {
         try {
             const name: string = req.body?.name;
             const classID: string = req.body?.classID;
@@ -57,13 +57,13 @@ export default async function handler(
                     name: name
                 }
             })
-            
+
             return res.status(200).json(response);
         } catch (error) {
             console.error(error);
             return res.status(500).json(error);
-        }       
-      } else if (req.method === 'PATCH') {
+        }
+    } else if (req.method === 'PATCH') {
         try {
             const lessonID = Array.isArray(req.query.lesson_id) ? req.query.lesson_id[0] : req.query.lesson_id;
             const published_flag: boolean = req.body?.published_flag;
@@ -81,11 +81,29 @@ export default async function handler(
         } catch (error) {
             console.error(error);
             return res.status(500).json(error);
-        }       
-      }
-      
-      else {
-            res.status(405).json({ message: 'Method not allowed' });
-      }
+        }
+    } else if (req.method === 'PUT') {
+        try {
+            const lessonID = Array.isArray(req.query.lesson_id) ? req.query.lesson_id[0] : req.query.lesson_id;
+            const markdownData: string = req.body?.markdown;
+
+            const response = await client.lesson.update({
+                where: {
+                    id: lessonID
+                },
+                data: {
+                    lectureContent: markdownData
+                }
+            })
+
+            return res.status(200).json(response);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json(error);
+        }
+
+    } else {
+        res.status(405).json({ message: 'Method not allowed' });
+    }
 }
 

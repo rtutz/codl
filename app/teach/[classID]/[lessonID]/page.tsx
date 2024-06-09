@@ -71,10 +71,10 @@ export default function lesson() {
             <div className="flex-grow min-h-screen">
                 {currentView === "lesson" &&
                     <MarkdownProvider>
-                    <Lecture lectureContent={lesson?.lectureContent || ''} />
+                    <Lecture lectureContent={lesson?.lectureContent || ''} lessonID={lessonID}/>
                 </MarkdownProvider>}
 
-                
+
             </div>
             
         </div>
