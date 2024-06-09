@@ -49,33 +49,48 @@ model UserLessonMap {
 }
 
 model Lesson {
-  id             String          @id @unique @default(dbgenerated("gen_random_uuid()"))
+  id             String           @id @unique @default(dbgenerated("gen_random_uuid()"))
   name           String
   classId        String
-  published      Boolean         @default(false)
-  lectureContent String          @default("")
-  dueDate        DateTime?       @default(now()) @updatedAt @db.Timestamptz(6)
-  class          Class           @relation(fields: [classId], references: [id], onDelete: Cascade)
+  published      Boolean          @default(false)
+  lectureContent String           @default("")
+  dueDate        DateTime?        @default(now()) @updatedAt @db.Timestamptz(6)
+  class          Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
   quizzes        Quiz[]
   testCases      TestCases[]
   UserLessonMap  UserLessonMap[]
+  CodingQuestion CodingQuestion[]
 }
 
 model Quiz {
-  id       Int    @id @default(autoincrement())
-  question String
-  choices  String
-  answer   String
-  lessonId String
-  lesson   Lesson @relation(fields: [lessonId], references: [id])
+  id            String @id @unique @default(dbgenerated("gen_random_uuid()"))
+  question      String
+  choice1       String
+  choice2       String
+  choice3       String
+  choice4       String
+  correctAnswer Int
+  lessonId      String
+  lesson        Lesson @relation(fields: [lessonId], references: [id])
+}
+
+model CodingQuestion {
+  id             String      @id @unique @default(dbgenerated("gen_random_uuid()"))
+  lessonId       String
+  lesson         Lesson      @relation(fields: [lessonId], references: [id])
+  questionNumber Int         @unique @default(autoincrement())
+  markdown       String
+  TestCases      TestCases[]
 }
 
 model TestCases {
-  id       Int    @id @default(autoincrement())
-  input    String
-  output   String
-  lessonId String
-  lesson   Lesson @relation(fields: [lessonId], references: [id])
+  id             Int            @id @default(autoincrement())
+  input          String
+  output         String
+  lessonId       String
+  lesson         Lesson         @relation(fields: [lessonId], references: [id])
+  questionNumber Int
+  codingQuestion CodingQuestion @relation(fields: [questionNumber], references: [questionNumber])
 }
 
 model Account {

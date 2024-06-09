@@ -5,6 +5,7 @@ import MarkdownProvider from "@/providers/markdownProvider"
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import SideNav from "@/components/sideNav";
+import Coding from "@/components/coding";
 
 interface Lesson {
     classId: number;
@@ -71,8 +72,11 @@ export default function lesson() {
             <div className="flex-grow min-h-screen">
                 {currentView === "lesson" &&
                     <MarkdownProvider>
-                    <Lecture lectureContent={lesson?.lectureContent || ''} lessonID={lessonID}/>
-                </MarkdownProvider>}
+                        <Lecture lectureContent={lesson?.lectureContent || ''} lessonID={lessonID}/>
+                    </MarkdownProvider>
+                }
+
+                {currentView === "coding" && <Coding lessonID={lessonID}/>}
 
 
             </div>

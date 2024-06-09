@@ -23,7 +23,7 @@ export default function SideNav({ updateCurrentView }: ISideNav) {
                 </button>
 
 
-                <button onClick={() => updateCurrentView('challenge')}>
+                <button onClick={() => updateCurrentView('coding')}>
                     <SideNavIcon icon={<FaCode size="32" />} />
                 </button>
 
