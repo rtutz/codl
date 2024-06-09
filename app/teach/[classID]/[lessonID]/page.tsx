@@ -76,11 +76,11 @@ export default function lesson() {
                     </MarkdownProvider>
                 }
 
-                {/* {currentView === "coding" &&
+                {currentView === "coding" &&
                     <MarkdownProvider>
                         <Coding lessonID={lessonID} />
                     </MarkdownProvider>
-                } */}
+                }
 
 
             </div>

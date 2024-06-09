@@ -57,7 +57,6 @@ model Lesson {
   dueDate        DateTime?        @default(now()) @updatedAt @db.Timestamptz(6)
   class          Class            @relation(fields: [classId], references: [id], onDelete: Cascade)
   quizzes        Quiz[]
-  testCases      TestCases[]
   UserLessonMap  UserLessonMap[]
   CodingQuestion CodingQuestion[]
 }
@@ -78,9 +77,11 @@ model CodingQuestion {
   id             String      @id @unique @default(dbgenerated("gen_random_uuid()"))
   lessonId       String
   lesson         Lesson      @relation(fields: [lessonId], references: [id])
-  questionNumber Int         @unique @default(autoincrement())
+  questionNumber Int
   markdown       String
   TestCases      TestCases[]
+
+  @@unique([lessonId, questionNumber])
 }
 
 model TestCases {
@@ -88,9 +89,8 @@ model TestCases {
   input          String
   output         String
   lessonId       String
-  lesson         Lesson         @relation(fields: [lessonId], references: [id])
   questionNumber Int
-  codingQuestion CodingQuestion @relation(fields: [questionNumber], references: [questionNumber])
+  codingQuestion CodingQuestion @relation(fields: [lessonId, questionNumber], references: [lessonId, questionNumber])
 }
 
 model Account {
