@@ -86,28 +86,43 @@ export default async function handler(
         }
     } else if (req.method === 'GET') {
         try {
-            const userID: string = req.query.user_id as string;
+            const userID = req.query.user_id ? (req.query.user_id as string) : undefined;
+            const classID = req.query.class_id ? (req.query.class_id as string) : undefined;
       
-            const userClassData = await client.userClassMap.findMany({
-                where: {
-                    userID: userID
-                }
-            })
-        
-            const classData = await client.class.findMany();
+            if (userID) {
+                const userClassData = await client.userClassMap.findMany({
+                    where: {
+                        userID: userID
+                    }
+                })
+            
+                const classData = await client.class.findMany();
+    
+                // This is just a SQL inner join since prisma does not support JOIN
+                const joinedData = userClassData.map(userClass => {
+                    const matchingClass = classData.find(cls => cls.id === userClass.classID);
+                    return {
+                      ...userClass,
+                      className: matchingClass ? matchingClass.name : null,
+                      ...matchingClass
+                    };
+                  });
+    
+    
+                return res.status(200).json(joinedData)
+            }
 
-            // This is just a SQL inner join since prisma does not support JOIN
-            const joinedData = userClassData.map(userClass => {
-                const matchingClass = classData.find(cls => cls.id === userClass.classID);
-                return {
-                  ...userClass,
-                  className: matchingClass ? matchingClass.name : null,
-                  ...matchingClass
-                };
-              });
+            if (classID) {
+                const classData = await client.class.findUnique({
+                    where: {
+                        id: classID
+                    }
+                })
 
+                return res.status(200).json(classData);
+            }
 
-            return res.status(200).json(joinedData)
+            res.status(500).json("Invalid endpoint for class.");
           } catch (error) {
             res.status(500).json({ error: 'Failed to fetch data' });
           }
