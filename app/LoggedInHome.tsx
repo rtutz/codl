@@ -149,7 +149,7 @@ export default function LoggedInHome() {
 
     return (
         <div>
-            {showAlert && <AlertUI message={"The given class ID do not exist or you are already teaching this class."} />}
+            {showAlert && <AlertUI message={"The given class ID do not exist or you are already teaching this class."} styling={'destructive'}/>}
 
             {/* Back button */}
             <SignOutBtn />

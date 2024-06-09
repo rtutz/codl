@@ -16,7 +16,6 @@ interface IClass {
 
 export default function DisplayClasses({ classID, name, deleteEntireClass, userID, updateDisplayedClasses }: IClass) {
     const [showAlert, setShowAlert] = useState<boolean>(false);
-    { showAlert && <AlertUI message={"The given class ID do not exist or you are already teaching this class."} /> }
 
     async function deleteClass() {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/class`, {
@@ -42,7 +41,7 @@ export default function DisplayClasses({ classID, name, deleteEntireClass, userI
 
     return (
         <>
-            {showAlert && <AlertUI message={"There was an error deleting this project."} />}
+            {showAlert && <AlertUI message={"There was an error deleting this project."} styling={'destructive'}/>}
             <div className="flex justify-between items-center hover:text-white" key={classID}>
                 <Link href={`/teach/${classID}`}>
                     <Avatar>
