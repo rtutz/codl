@@ -3,13 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Cross1Icon } from "@radix-ui/react-icons"
 import {
     Card,
     CardContent
 } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import Link from "next/link"
 import SignOutBtn from "@/components/signOutBtn"
 import type { DefaultSession } from 'next-auth';
 import NewClassBtn from '@/components/newClassBtn';

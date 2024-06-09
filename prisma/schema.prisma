@@ -52,8 +52,8 @@ model Lesson {
   id             String          @id @unique @default(dbgenerated("gen_random_uuid()"))
   name           String
   classId        String
-  published      Boolean
-  lectureContent String
+  published      Boolean         @default(false)
+  lectureContent String          @default("")
   dueDate        DateTime?       @default(now()) @updatedAt @db.Timestamptz(6)
   class          Class           @relation(fields: [classId], references: [id], onDelete: Cascade)
   quizzes        Quiz[]

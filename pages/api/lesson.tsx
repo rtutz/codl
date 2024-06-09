@@ -46,7 +46,26 @@ export default async function handler(
             console.error(error);
             return res.status(500).json(error);
         }
-      } else {
+      } else if (req.method === 'POST') {
+        try {
+            const name: string = req.body?.name;
+            const classID: string = req.body?.classID;
+
+            const response = await client.lesson.create({
+                data: {
+                    classId: classID,
+                    name: name
+                }
+            })
+            
+            return res.status(200).json(response);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json(error);
+        }       
+      }
+      
+      else {
             res.status(405).json({ message: 'Method not allowed' });
       }
 }

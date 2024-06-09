@@ -26,6 +26,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { MouseEvent, useEffect, useState } from "react"
 import { usePathname } from 'next/navigation'
+import NewLessonBtn from "@/components/newLessonBtn"
 
 interface Lesson {
     classId: number;
@@ -101,7 +102,7 @@ function ClassHome() {
     const { data: session, status, update } = useSession();
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [classInfo, setClassInfo] = useState<Class>();
-
+    const [newLessonName, setNewLessonName] = useState<string>('');
 
     if (status !== "authenticated") redirect("/")
 
@@ -135,6 +136,21 @@ function ClassHome() {
         fetchData();
 
     }, [])
+
+    async function submitNewLesson() {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: newLessonName, classID: classID?.classID }),
+            cache: 'no-store',
+        });
+
+        const responseData = await response.json();
+        setNewLessonName('');
+        setLessons([...lessons, responseData]);
+    }
 
     const switchPublish = (id: string, checked: boolean) => {
         const updatedLessons = lessons.map((lesson) =>
@@ -182,16 +198,14 @@ function ClassHome() {
                 </button>
 
                 {/* Create new Project */}
-                <Button className="max-w-fit mt-10">
-                    <PlusIcon /><span className="mx-4">Create New Lesson</span>
-                </Button>
+                <NewLessonBtn newLessonName={newLessonName} setNewLessonName={setNewLessonName} submitNewLesson={submitNewLesson}/>
                 <Card>
                     <Table>
                         <TableHeader>
                             <TableRow>
                                 <TableHead className="w-[300px]">Title</TableHead>
-                                <TableHead>Due Date</TableHead>
-                                <TableHead>Submissions</TableHead>
+                                {/* <TableHead>Due Date</TableHead>
+                                <TableHead>Submissions</TableHead> */}
                                 <TableHead className="text-right">Published</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -199,8 +213,8 @@ function ClassHome() {
                             {lessons.map((lesson) => (
                                 <TableRow key={lesson.id} onClick={(e) => openProject(e, lesson.id)}>
                                     <TableCell className="font-medium">{lesson.name}</TableCell>
-                                    <TableCell>{formatDate(lesson.dueDate)}</TableCell>
-                                    <TableCell>5/4</TableCell>
+                                    {/* <TableCell>{formatDate(lesson.dueDate)}</TableCell>
+                                    <TableCell>5/4</TableCell> */}
                                     <TableCell className="text-right">
                                         <Switch checked={lesson.published}
                                             onCheckedChange={(checked) => {
