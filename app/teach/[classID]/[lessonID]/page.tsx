@@ -4,6 +4,7 @@ import Lecture from "@/components/lecture"
 import MarkdownProvider from "@/providers/markdownProvider"
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import SideNav from "@/components/sideNav";
 
 interface Lesson {
     classId: number;
@@ -40,6 +41,7 @@ async function getLesson(lesson_id: string | undefined) {
 }
 
 export default function lesson() {
+    const [currentView, setCurrentView] = useState<string>('lesson');
     const params = useParams<{ classID: string; lessonID: string }>()!;
     const [classID, lessonID] = [params.classID, params.lessonID];
     const [lesson, setLesson] = useState<Lesson>();
@@ -55,19 +57,24 @@ export default function lesson() {
         fetchLesson();
     }, [])
 
+    function updateView(view: string) {
+        console.log("view is now", view);
+        setCurrentView(view);
+    }
+
 
     return (
         <div className="flex min-h-screen">
             {/* Side Nav */}
-            <div className="border border-border min-h-full" style={{width: '6%'}}>
-                testing
-            </div>
+            <SideNav updateCurrentView={updateView}/>
             
             <div className="flex-grow min-h-screen">
-                <MarkdownProvider>
-                <Lecture lectureContent={lesson?.lectureContent || ''} />
+                {currentView === "lesson" &&
+                    <MarkdownProvider>
+                    <Lecture lectureContent={lesson?.lectureContent || ''} />
+                </MarkdownProvider>}
 
-                </MarkdownProvider>
+                
             </div>
             
         </div>

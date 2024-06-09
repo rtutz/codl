@@ -72,10 +72,16 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   .gray {
     color: var(--custom-gray);
+  }
+
+  .sidebar-icon {
+    @apply relative flex items-center justify-center h-12 w-12 my-2 shadow-lg mx-auto bg-gray-800 text-green-500 hover:bg-green-600 hover:text-white rounded-3xl hover:rounded-xl transition-all duration-300 ease-linear cursor-pointer;
   }
 }
