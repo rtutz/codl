@@ -19,6 +19,9 @@ export default async function handler(
                 const response = await client.codingQuestion.findMany({
                     where: {
                         lessonId: lessonID
+                    },
+                    orderBy: {
+                        id: 'asc'
                     }
                 })
 
@@ -32,7 +35,32 @@ export default async function handler(
             console.error(error);
             return res.status(500).json(error);
         }
-    } else {
+    } else if (req.method === 'PATCH') {
+        try {
+            const codingquestionID = req.query.id ? (req.query.id as string) : undefined;
+            const markdownData = req.body?.markdown;
+
+            if (codingquestionID) {
+                const response = await client.codingQuestion.update({
+                    where: {
+                        id: codingquestionID
+                    },
+                    data: {
+                        markdown: markdownData
+                    }
+                })
+
+                return res.status(200).json(response)
+            }
+
+
+        } catch(error) {
+            console.error(error);
+            return res.status(500).json(error);
+        }
+    }
+    
+    else {
         res.status(405).json({ message: 'Method not allowed' });
     }
 }

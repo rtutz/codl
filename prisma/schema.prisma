@@ -74,23 +74,19 @@ model Quiz {
 }
 
 model CodingQuestion {
-  id             String      @id @unique @default(dbgenerated("gen_random_uuid()"))
-  lessonId       String
-  lesson         Lesson      @relation(fields: [lessonId], references: [id])
-  questionNumber Int
-  markdown       String
-  TestCases      TestCases[]
-
-  @@unique([lessonId, questionNumber])
+  id        String      @id @unique @default(dbgenerated("gen_random_uuid()"))
+  lessonId  String
+  lesson    Lesson      @relation(fields: [lessonId], references: [id])
+  markdown  String
+  TestCases TestCases[]
 }
 
 model TestCases {
   id             Int            @id @default(autoincrement())
   input          String
   output         String
-  lessonId       String
-  questionNumber Int
-  codingQuestion CodingQuestion @relation(fields: [lessonId, questionNumber], references: [lessonId, questionNumber])
+  codingQuestion CodingQuestion @relation(fields: [codingQuestionId], references: [id])
+  codingQuestionId String       @unique
 }
 
 model Account {
