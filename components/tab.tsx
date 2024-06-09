@@ -12,7 +12,7 @@ interface IProps {
     updateCurrQuestionNum: (questionNum: ICodingQuestion) => void;
 }
 
-export default function Tabs({codingQuestions, currQuestion, updateCurrQuestionNum} : IProps) {
+export default function Tab({codingQuestions, currQuestion, updateCurrQuestionNum} : IProps) {
     return (
         <div className="flex">
             {codingQuestions?.map((item, index) => (

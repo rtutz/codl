@@ -2,10 +2,16 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "./ui/button"
-import Tabs from "./tabs"
+import Tab from "./tab"
 import MarkdownEditor from "./markdownEditor"
 import MarkdownPreview from "./markdownPreview"
 import AlertUI from "./error"
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+  } from "@/components/ui/tabs"
 
 interface ICoding {
     lessonID: string
@@ -114,7 +120,7 @@ export default function Coding({ lessonID }: ICoding) {
                 message={alertMessage}
                 styling={alertStyling} />}
             <div className="flex mt-4 justify-between">
-                <Tabs codingQuestions={codingQuestions} currQuestion={currQuestion} updateCurrQuestionNum={updateCurrQuestionNum} />
+                <Tab codingQuestions={codingQuestions} currQuestion={currQuestion} updateCurrQuestionNum={updateCurrQuestionNum} />
 
                 <Button className="mx-4 py-4" onClick={saveMarkdown}>
                     Save
@@ -130,10 +136,25 @@ export default function Coding({ lessonID }: ICoding) {
                 </div>
                 <div className="w-1/2 border border-border flex flex-col overflow-x-auto">
                     {/* Header */}
-                    <div className="bg-gray-800 text-2xl font-black p-2">Preview</div>
+                 
+                    <Tabs defaultValue="preview" className="w-[400px]">
+                    <TabsList className="grid w-full grid-cols-2 bg-gray-800">
+                        <TabsTrigger value="preview">Preview</TabsTrigger>
+                        <TabsTrigger value="tests">Test Cases</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="preview">
+                    <MarkdownPreview markdownContent={currQuestion?.markdown || ''} />
+                    </TabsContent>
+                    <TabsContent value="tests">
+                        <div>
+                            Testing
+                        </div>
+                    </TabsContent>
+                    </Tabs>
+                 
 
                     {/* Content */}
-                    <MarkdownPreview markdownContent={currQuestion?.markdown || ''} />
+                    
                 </div>
             </div>
 
