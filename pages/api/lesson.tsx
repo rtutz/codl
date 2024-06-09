@@ -63,6 +63,25 @@ export default async function handler(
             console.error(error);
             return res.status(500).json(error);
         }       
+      } else if (req.method === 'PATCH') {
+        try {
+            const lessonID = Array.isArray(req.query.lesson_id) ? req.query.lesson_id[0] : req.query.lesson_id;
+            const published_flag: boolean = req.body?.published_flag;
+
+            const response = await client.lesson.update({
+                where: {
+                    id: lessonID
+                },
+                data: {
+                    published: published_flag
+                }
+            })
+
+            return res.status(200).json(response);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json(error);
+        }       
       }
       
       else {

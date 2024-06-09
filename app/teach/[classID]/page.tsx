@@ -152,10 +152,24 @@ function ClassHome() {
         setLessons([...lessons, responseData]);
     }
 
-    const switchPublish = (id: string, checked: boolean) => {
+    const switchPublish = async (id: string, checked: boolean) => {
         const updatedLessons = lessons.map((lesson) =>
             lesson.id === id ? { ...lesson, published: checked } : lesson
         );
+
+        const responseDB = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson?lesson_id=${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ published_flag: checked }),
+            cache: 'no-store',
+        });
+
+        if (!responseDB.ok) {
+            redirect('/')
+        }
+
         setLessons(updatedLessons);
 
         // Add logic to update the database 
