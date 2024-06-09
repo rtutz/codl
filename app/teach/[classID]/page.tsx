@@ -36,6 +36,11 @@ interface Lesson {
     published: boolean;
 }
 
+interface Class {
+    id: string,
+    name: string
+}
+
 async function getLessons(class_id: string | undefined) {
     try {
         if (!class_id) {
@@ -43,6 +48,31 @@ async function getLessons(class_id: string | undefined) {
         }
 
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson?class_id=${class_id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            cache: 'no-store',
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch data');
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+}
+
+async function getClassInfo(class_id: string | undefined) {
+    try {
+        if (!class_id) {
+            throw new Error('class_id is required');
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/class?class_id=${class_id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -70,6 +100,7 @@ function formatDate(date: Date): string {
 function ClassHome() {
     const { data: session, status, update } = useSession();
     const [lessons, setLessons] = useState<Lesson[]>([]);
+    const [classInfo, setClassInfo] = useState<Class>();
 
 
     if (status !== "authenticated") redirect("/")
@@ -93,8 +124,12 @@ function ClassHome() {
                     dueDate: new Date(lesson.dueDate), // Transform dueDate to a Date object
                 }));
 
+                const classInfoData = await getClassInfo(classID?.classID);
+                setClassInfo(classInfoData);
+
                 setLessons(transformedData);
             }
+
         };
 
         fetchData();
@@ -128,8 +163,8 @@ function ClassHome() {
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col justify-start">
-                            <h1 className="text-3xl">Intro to Python</h1>
-                            <span className="text-xs">6473338512</span>
+                            <h1 className="text-3xl">{classInfo?.name}</h1>
+                            <span className="text-xs">{classInfo?.id}</span>
                         </div>
                     </div>
                     <div>

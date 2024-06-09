@@ -42,8 +42,8 @@ model UserLessonMap {
   userID    String
   lessonID  String
   submitted Boolean
-  lesson    Lesson  @relation(fields: [lessonID], references: [id])
-  user      User    @relation(fields: [userID], references: [id])
+  lesson    Lesson  @relation(fields: [lessonID], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userID], references: [id], onDelete: Cascade)
 
   @@id([userID, lessonID])
 }
@@ -55,7 +55,7 @@ model Lesson {
   published      Boolean
   lectureContent String
   dueDate        DateTime?       @default(now()) @updatedAt @db.Timestamptz(6)
-  class          Class           @relation(fields: [classId], references: [id])
+  class          Class           @relation(fields: [classId], references: [id], onDelete: Cascade)
   quizzes        Quiz[]
   testCases      TestCases[]
   UserLessonMap  UserLessonMap[]
