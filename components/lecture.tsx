@@ -1,13 +1,10 @@
 "use client"
 import { useMarkdown } from "@/providers/markdownProvider"
 import { useEffect, useState } from "react";
-import ReactMarkdown from 'react-markdown'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import {
-  dracula,
-} from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { Button } from "./ui/button";
 import AlertUI from "./error";
+import MarkdownPreview from "./markdownPreview";
+import MarkdownEditor from "./markdownEditor";
 
 interface ILecture {
     lectureContent: string,
@@ -75,11 +72,7 @@ export default function Lecture({lectureContent, lessonID}: ILecture)  {
                 <div className="w-1/2 border border-border flex flex-col overflow-x-auto">
                     {/* Header */}
                     <div>Header</div>
-                    <textarea
-                        className="flex-grow bg-transparent focus:outline-none resize-none w-full p-4"
-                        value={markdown.markdown}
-                        onChange={(e) => setMarkdown({ markdown: e.target.value })}
-                    />
+                    <MarkdownEditor markdown={markdown.markdown} setMarkdown={setMarkdown}/>
                 </div>
 
                 {/* Preview */}
@@ -88,29 +81,7 @@ export default function Lecture({lectureContent, lessonID}: ILecture)  {
                     <div>Preview</div>
 
                     {/* Content */}
-                    <article className="prose prose-headings:text-white prose-p:text-white min-w-full p-4">
-                    <ReactMarkdown
-                    components={{
-                        code({ node, inline, className, children, ...props }: any) {
-                        const match = /language-(\w+)/.exec(className || '');
-                        return !inline && match ? (
-                            <SyntaxHighlighter
-                            style={dracula} 
-                            language={match[1]}
-                            PreTag="div"
-                            {...props}
-                            >
-                            {String(children).replace(/\n$/, '')}
-                            </SyntaxHighlighter>
-                        ) : (
-                            <code>{children}</code>
-                        );
-                        },
-                    }}
-                    >
-                    {markdown.markdown}
-                    </ReactMarkdown>
-                    </article>
+                    <MarkdownPreview markdownContent={markdown.markdown}/>
                 </div>
             </div>
 

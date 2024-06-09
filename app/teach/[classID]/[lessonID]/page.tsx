@@ -14,7 +14,7 @@ interface Lesson {
     lectureContent: string;
     name: string;
     published: boolean;
-  }
+}
 
 async function getLesson(lesson_id: string | undefined) {
     try {
@@ -67,20 +67,24 @@ export default function lesson() {
     return (
         <div className="flex min-h-screen">
             {/* Side Nav */}
-            <SideNav updateCurrentView={updateView}/>
-            
+            <SideNav updateCurrentView={updateView} />
+
             <div className="flex-grow min-h-screen">
                 {currentView === "lesson" &&
                     <MarkdownProvider>
-                        <Lecture lectureContent={lesson?.lectureContent || ''} lessonID={lessonID}/>
+                        <Lecture lectureContent={lesson?.lectureContent || ''} lessonID={lessonID} />
                     </MarkdownProvider>
                 }
 
-                {currentView === "coding" && <Coding lessonID={lessonID}/>}
+                {/* {currentView === "coding" &&
+                    <MarkdownProvider>
+                        <Coding lessonID={lessonID} />
+                    </MarkdownProvider>
+                } */}
 
 
             </div>
-            
+
         </div>
     )
 }
