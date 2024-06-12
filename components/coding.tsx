@@ -12,6 +12,7 @@ import {
     TabsList,
     TabsTrigger,
   } from "@/components/ui/tabs"
+import TestCases from "./testCases"
 
 interface ICoding {
     lessonID: string
@@ -23,17 +24,11 @@ interface ICodingQuestion {
     markdown: string
 }
 
-interface ITestCases {
-    id: number,
-    input: string,
-    output: string,
-    codingQuestionId: string
-}
+
 
 export default function Coding({ lessonID }: ICoding) {
     const [currQuestion, setCurrQuestion] = useState<ICodingQuestion>();
     const [codingQuestions, setCodingQuestions] = useState<ICodingQuestion[]>();
-    const [testCases, setTestCases] = useState<ITestCases>();
 
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertMessage, setAlertMessage] = useState<string>('There was an error saving the file.');
@@ -146,13 +141,9 @@ export default function Coding({ lessonID }: ICoding) {
                     <MarkdownPreview markdownContent={currQuestion?.markdown || ''} />
                     </TabsContent>
                     <TabsContent value="tests">
-                        <div>
-                            Testing
-                        </div>
+                        <TestCases codingQuestionId={currQuestion?.id || ''}/>
                     </TabsContent>
                     </Tabs>
-                 
-
                     {/* Content */}
                     
                 </div>

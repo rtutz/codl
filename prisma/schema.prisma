@@ -82,11 +82,11 @@ model CodingQuestion {
 }
 
 model TestCases {
-  id             Int            @id @default(autoincrement())
+  id        String      @id @unique @default(dbgenerated("gen_random_uuid()"))
   input          String
   output         String
   codingQuestion CodingQuestion @relation(fields: [codingQuestionId], references: [id])
-  codingQuestionId String       @unique
+  codingQuestionId String
 }
 
 model Account {
