@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import SideNav from "@/components/sideNav";
 import Coding from "@/components/coding";
+import QuizView from "@/components/quizVIew";
 
 interface Lesson {
     classId: number;
@@ -80,6 +81,10 @@ export default function lesson() {
                     <MarkdownProvider>
                         <Coding lessonID={lessonID} />
                     </MarkdownProvider>
+                }
+
+                {currentView === "quiz" &&
+                        <QuizView lessonID={lessonID} />
                 }
 
 
