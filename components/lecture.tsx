@@ -71,14 +71,18 @@ export default function Lecture({lectureContent, lessonID}: ILecture)  {
                 {/* Editor */}
                 <div className="w-1/2 border border-border flex flex-col overflow-x-auto">
                     {/* Header */}
-                    <div>Header</div>
+                    <div className="bg-gray-800 text-white text-2xl font-bold px-4 h-12 py-auto items-center flex">
+                        Edit Markdown File
+                    </div>
                     <MarkdownEditor markdown={markdown.markdown} setMarkdown={setMarkdown}/>
                 </div>
 
                 {/* Preview */}
                 <div className="w-1/2 border border-border flex flex-col overflow-x-auto">
                     {/* Header */}
-                    <div>Preview</div>
+                    <div className="bg-gray-800 text-white text-2xl font-bold px-4 h-12 py-auto items-center flex">
+                        Preview
+                    </div>
 
                     {/* Content */}
                     <MarkdownPreview markdownContent={markdown.markdown}/>

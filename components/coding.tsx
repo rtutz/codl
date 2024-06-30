@@ -11,7 +11,7 @@ import {
     TabsContent,
     TabsList,
     TabsTrigger,
-  } from "@/components/ui/tabs"
+} from "@/components/ui/tabs"
 import TestCases from "./testCases"
 
 interface ICoding {
@@ -124,31 +124,44 @@ export default function Coding({ lessonID }: ICoding) {
             </div>
 
             <div className="h-full flex">
-                <div className="w-1/2 border border-border border-t-0 flex flex-col overflow-x-auto">
-                    {/* Header */}
-                    <div className="bg-gray-800 text-2xl font-black p-2">Edit Markdown File</div>
-                    <MarkdownEditor markdown={currQuestion?.markdown} setMarkdown={updateQuestionMarkdown} />
+                <div className="w-1/2 border-r border-border flex flex-col overflow-hidden">
+                    <div className="bg-gray-800 text-white text-2xl font-bold px-4 h-12 py-auto items-center flex">
+                        Edit Markdown File
+                    </div>
+                    <div className="flex-grow overflow-auto">
+                        <MarkdownEditor
+                            markdown={currQuestion?.markdown}
+                            setMarkdown={updateQuestionMarkdown}
+                        />
+                    </div>
                 </div>
-                <div className="w-1/2 border border-border flex flex-col overflow-x-auto">
-                    {/* Header */}
-                 
-                    <Tabs defaultValue="preview" className="w-[400px]">
-                    <TabsList className="grid w-full grid-cols-2 bg-gray-800">
-                        <TabsTrigger value="preview">Preview</TabsTrigger>
-                        <TabsTrigger value="tests">Test Cases</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="preview">
-                    <MarkdownPreview markdownContent={currQuestion?.markdown || ''} />
-                    </TabsContent>
-                    <TabsContent value="tests">
-                        <TestCases codingQuestionId={currQuestion?.id || ''}/>
-                    </TabsContent>
+                <div className="w-1/2 flex flex-col overflow-hidden">
+                    <Tabs defaultValue="preview" className="w-full h-full flex flex-col">
+                        <div className="bg-gray-800 text-white px-4 h-12 flex items-center">
+                            <TabsList className="inline-flex bg-gray-700 rounded-md">
+                                <TabsTrigger
+                                    value="preview"
+                                    className="px-4 py-2 text-sm font-medium text-white hover:bg-gray-600 rounded-l-md transition-colors"
+                                >
+                                    Preview
+                                </TabsTrigger>
+                                <TabsTrigger
+                                    value="tests"
+                                    className="px-4 py-2 text-sm font-medium text-white hover:bg-gray-600 rounded-r-md transition-colors"
+                                >
+                                    Test Cases
+                                </TabsTrigger>
+                            </TabsList>
+                        </div>
+                        <TabsContent value="preview" className="flex-grow overflow-auto p-4">
+                            <MarkdownPreview markdownContent={currQuestion?.markdown || ''} />
+                        </TabsContent>
+                        <TabsContent value="tests" className="flex-grow overflow-auto p-4">
+                            <TestCases codingQuestionId={currQuestion?.id || ''} />
+                        </TabsContent>
                     </Tabs>
-                    {/* Content */}
-                    
                 </div>
             </div>
-
         </>
     )
 }
