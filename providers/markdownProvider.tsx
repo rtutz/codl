@@ -2,19 +2,15 @@
 
 import React, { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction } from 'react';
 
-interface IMarkdown {
-  markdown: string;
-}
-
 interface IMarkdownContext {
-  markdown: IMarkdown;
-  setMarkdown: Dispatch<SetStateAction<IMarkdown>>;
+  markdown: string;
+  setMarkdown: Dispatch<SetStateAction<string>>;
 }
 
 const MarkdownContext = createContext<IMarkdownContext | undefined>(undefined);
 
 const MarkdownProvider = ({ children }: { children: ReactNode }) => {
-  const [markdown, setMarkdown] = useState<IMarkdown>({ markdown: '' });
+  const [markdown, setMarkdown] = useState<string>('');
 
   return (
     <MarkdownContext.Provider value={{ markdown, setMarkdown }}>

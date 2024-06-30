@@ -61,11 +61,11 @@ export default function Coding({ lessonID }: ICoding) {
         setCurrQuestion(chosenQuestion);
     }
 
-    const updateQuestionMarkdown = (newMarkdown: { markdown: string }) => {
+    const updateQuestionMarkdown = (newMarkdown: string) => {
         if (currQuestion) {
             setCurrQuestion({
                 ...currQuestion,
-                markdown: newMarkdown.markdown,
+                markdown: newMarkdown,
             });
         }
     };

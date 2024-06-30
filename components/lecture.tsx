@@ -18,7 +18,7 @@ export default function Lecture({lectureContent, lessonID}: ILecture)  {
     const [alertStyling, setAlertStyling] = useState<"default" | "destructive" | null | undefined>('destructive');
     
     useEffect(() => {
-        setMarkdown({markdown: lectureContent});
+        setMarkdown(lectureContent);
     }, [lectureContent]);
 
     useEffect(() => {
@@ -39,7 +39,7 @@ export default function Lecture({lectureContent, lessonID}: ILecture)  {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ markdown: markdown.markdown }),
+            body: JSON.stringify({ markdown: markdown }),
             cache: 'no-store',
         });
 
@@ -62,7 +62,7 @@ export default function Lecture({lectureContent, lessonID}: ILecture)  {
             {/* Top nav for buttons */}
             <div className="min-w-full py-4 flex justify-end">
                 <Button className="mx-4" onClick={saveMarkdown}>
-                    Save
+                    Save Lesson
                 </Button>
             </div>
 
@@ -74,7 +74,7 @@ export default function Lecture({lectureContent, lessonID}: ILecture)  {
                     <div className="bg-gray-800 text-white text-2xl font-bold px-4 h-12 py-auto items-center flex">
                         Edit Markdown File
                     </div>
-                    <MarkdownEditor markdown={markdown.markdown} setMarkdown={setMarkdown}/>
+                    <MarkdownEditor markdown={markdown} setMarkdown={setMarkdown}/>
                 </div>
 
                 {/* Preview */}
@@ -85,7 +85,7 @@ export default function Lecture({lectureContent, lessonID}: ILecture)  {
                     </div>
 
                     {/* Content */}
-                    <MarkdownPreview markdownContent={markdown.markdown}/>
+                    <MarkdownPreview markdownContent={markdown}/>
                 </div>
             </div>
 
