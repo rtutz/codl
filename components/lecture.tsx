@@ -7,19 +7,15 @@ import MarkdownPreview from "./markdownPreview";
 import MarkdownEditor from "./markdownEditor";
 
 interface ILecture {
-    lectureContent: string,
-    lessonID: string
+    lectureContent: string;
+    lessonID: string;
+    markdown: string;
+    setMarkdown: React.Dispatch<React.SetStateAction<string>>;
 }
-
-export default function Lecture({lectureContent, lessonID}: ILecture)  {
-    const { markdown, setMarkdown } = useMarkdown();
+export default function Lecture({lectureContent, lessonID, markdown, setMarkdown}: ILecture)  {
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertMessage, setAlertMessage] = useState<string>('There was an error saving the file.');
     const [alertStyling, setAlertStyling] = useState<"default" | "destructive" | null | undefined>('destructive');
-    
-    useEffect(() => {
-        setMarkdown(lectureContent);
-    }, [lectureContent]);
 
     useEffect(() => {
         let timeout: ReturnType<typeof setTimeout> | undefined;

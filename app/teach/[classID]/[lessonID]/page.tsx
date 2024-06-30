@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import SideNav from "@/components/sideNav";
 import Coding from "@/components/coding";
 import QuizView from "@/components/quizVIew";
+import { useMarkdown } from "@/providers/markdownProvider"
 
 interface Lesson {
     classId: number;
@@ -42,25 +43,30 @@ async function getLesson(lesson_id: string | undefined) {
     }
 }
 
-export default function lesson() {
+function LessonContent() {
     const [currentView, setCurrentView] = useState<string>('lesson');
     const params = useParams<{ classID: string; lessonID: string }>()!;
     const [classID, lessonID] = [params.classID, params.lessonID];
     const [lesson, setLesson] = useState<Lesson>();
+
+    // For Lecture
+    const { markdown, setMarkdown } = useMarkdown();
+    console.log("markdown is", markdown);
 
     useEffect(() => {
         async function fetchLesson() {
             if (lessonID) {
                 const lessonData = await getLesson(lessonID);
                 setLesson(lessonData);
+                setMarkdown(lessonData?.lectureContent || '')
+
             }
         }
-
+        
         fetchLesson();
     }, [])
 
     function updateView(view: string) {
-        console.log("view is now", view);
         setCurrentView(view);
     }
 
@@ -73,7 +79,12 @@ export default function lesson() {
             <div className="flex-grow min-h-screen">
                 {currentView === "lesson" &&
                     <MarkdownProvider>
-                        <Lecture lectureContent={lesson?.lectureContent || ''} lessonID={lessonID} />
+                        <Lecture
+                            lectureContent={lesson?.lectureContent || ''}
+                            lessonID={lessonID}
+                            markdown={markdown}
+                            setMarkdown={setMarkdown}
+                        />
                     </MarkdownProvider>
                 }
 
@@ -84,7 +95,7 @@ export default function lesson() {
                 }
 
                 {currentView === "quiz" &&
-                        <QuizView lessonID={lessonID} />
+                    <QuizView lessonID={lessonID} />
                 }
 
 
@@ -92,4 +103,12 @@ export default function lesson() {
 
         </div>
     )
+}
+
+export default function LessonPage() {
+    return (
+        <MarkdownProvider>
+            <LessonContent />
+        </MarkdownProvider>
+    );
 }
