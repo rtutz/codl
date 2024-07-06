@@ -1,10 +1,10 @@
 "use client"
 import { useMarkdown } from "@/providers/markdownProvider"
 import { useEffect, useState } from "react";
-import { Button } from "./ui/button";
-import AlertUI from "./error";
-import MarkdownPreview from "./markdownPreview";
-import MarkdownEditor from "./markdownEditor";
+import { Button } from "../ui/button";
+import AlertUI from "../error";
+import MarkdownPreview from "../markdownPreview";
+import MarkdownEditor from "../markdownEditor";
 
 interface ILecture {
     lectureContent: string;
@@ -12,7 +12,7 @@ interface ILecture {
     markdown: string;
     setMarkdown: React.Dispatch<React.SetStateAction<string>>;
 }
-export default function Lecture({lectureContent, lessonID, markdown, setMarkdown}: ILecture)  {
+export default function Lecture({ lectureContent, lessonID, markdown, setMarkdown }: ILecture) {
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertMessage, setAlertMessage] = useState<string>('There was an error saving the file.');
     const [alertStyling, setAlertStyling] = useState<"default" | "destructive" | null | undefined>('destructive');
@@ -52,7 +52,7 @@ export default function Lecture({lectureContent, lessonID, markdown, setMarkdown
     return (
         <>
 
-            {showAlert && <AlertUI 
+            {showAlert && <AlertUI
                 message={alertMessage}
                 styling={alertStyling} />}
             {/* Top nav for buttons */}
@@ -70,7 +70,7 @@ export default function Lecture({lectureContent, lessonID, markdown, setMarkdown
                     <div className="bg-gray-800 text-white text-2xl font-bold px-4 h-12 py-auto items-center flex">
                         Edit Markdown File
                     </div>
-                    <MarkdownEditor markdown={markdown} setMarkdown={setMarkdown}/>
+                    <MarkdownEditor markdown={markdown} setMarkdown={setMarkdown} />
                 </div>
 
                 {/* Preview */}
@@ -81,7 +81,7 @@ export default function Lecture({lectureContent, lessonID, markdown, setMarkdown
                     </div>
 
                     {/* Content */}
-                    <MarkdownPreview markdownContent={markdown}/>
+                    <MarkdownPreview markdownContent={markdown} />
                 </div>
             </div>
 

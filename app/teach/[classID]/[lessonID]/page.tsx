@@ -1,12 +1,12 @@
 "use client"
 
-import Lecture from "@/components/lecture"
+import Lecture from "@/components/pages/lecture"
 import MarkdownProvider from "@/providers/markdownProvider"
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import SideNav from "@/components/sideNav";
-import Coding from "@/components/coding";
-import QuizView from "@/components/quizVIew";
+import Coding from "@/components/pages/coding";
+import QuizView from "@/components/pages/quizVIew";
 import { useMarkdown } from "@/providers/markdownProvider"
 
 interface Lesson {
@@ -62,7 +62,7 @@ function LessonContent() {
 
             }
         }
-        
+
         fetchLesson();
     }, [])
 

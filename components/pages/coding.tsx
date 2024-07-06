@@ -1,18 +1,18 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button } from "./ui/button"
-import Tab from "./tab"
-import MarkdownEditor from "./markdownEditor"
-import MarkdownPreview from "./markdownPreview"
-import AlertUI from "./error"
+import { Button } from "../ui/button"
+import Tab from "../tab"
+import MarkdownEditor from "../markdownEditor"
+import MarkdownPreview from "../markdownPreview"
+import AlertUI from "../error"
 import {
     Tabs,
     TabsContent,
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
-import TestCases from "./testCases"
+import TestCases from "../testCases"
 
 interface ICoding {
     lessonID: string
@@ -115,7 +115,7 @@ export default function Coding({ lessonID }: ICoding) {
                 message={alertMessage}
                 styling={alertStyling} />}
             <div className="flex mt-4 justify-between">
-                <Tab codingQuestions={codingQuestions} currQuestion={currQuestion} updateCurrQuestionNum={updateCurrQuestionNum} />
+                <Tab codingQuestions={codingQuestions} currQuestion={currQuestion} updateCurrQuestionNum={updateCurrQuestionNum} setCodingQuestions={setCodingQuestions} />
 
                 <Button className="mx-4 py-4" onClick={saveMarkdown}>
                     Save
