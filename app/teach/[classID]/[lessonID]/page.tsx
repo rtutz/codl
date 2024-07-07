@@ -8,7 +8,8 @@ import SideNav from "@/components/sideNav";
 import Coding from "@/components/pages/coding";
 import QuizView from "@/components/pages/quizVIew";
 import { useMarkdown } from "@/providers/markdownProvider"
-
+import { LessonIdProvider } from '../../../context/lessonContext'
+import { useLessonIdContext } from "../../../context/lessonContext";
 interface Lesson {
     classId: number;
     dueDate: Date;
@@ -49,6 +50,9 @@ function LessonContent() {
     const [classID, lessonID] = [params.classID, params.lessonID];
     const [lesson, setLesson] = useState<Lesson>();
 
+    const [lessonId, setLessonId] = useLessonIdContext();
+    setLessonId(lessonID);
+
     // For Lecture
     const { markdown, setMarkdown } = useMarkdown();
     console.log("markdown is", markdown);
@@ -77,6 +81,7 @@ function LessonContent() {
             <SideNav updateCurrentView={updateView} />
 
             <div className="flex-grow min-h-screen">
+
                 {currentView === "lesson" &&
                     <MarkdownProvider>
                         <Lecture
@@ -99,6 +104,7 @@ function LessonContent() {
                 }
 
 
+
             </div>
 
         </div>
@@ -107,8 +113,11 @@ function LessonContent() {
 
 export default function LessonPage() {
     return (
-        <MarkdownProvider>
-            <LessonContent />
-        </MarkdownProvider>
+        <LessonIdProvider>
+
+            <MarkdownProvider>
+                <LessonContent />
+            </MarkdownProvider>
+        </LessonIdProvider>
     );
 }

@@ -3,12 +3,17 @@
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
+import { useLessonIdContext } from "@/app/context/lessonContext"
+
 
 interface IQuizView {
     lessonID: string
 }
 
 export default function QuizView({ lessonID }: IQuizView) {
+    const [lessonId, setLessonId] = useLessonIdContext();
+    console.log("LessonId that is seen in coding.tsx is ", lessonId)
+
     return (
         // 
         <div className="w-3/4 mx-auto">

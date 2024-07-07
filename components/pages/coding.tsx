@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useLessonIdContext } from "@/app/context/lessonContext"
 import { Button } from "../ui/button"
 import Tab from "../tab"
 import MarkdownEditor from "../markdownEditor"
@@ -29,6 +30,8 @@ interface ICodingQuestion {
 export default function Coding({ lessonID }: ICoding) {
     const [currQuestion, setCurrQuestion] = useState<ICodingQuestion>();
     const [codingQuestions, setCodingQuestions] = useState<ICodingQuestion[]>();
+    const [lessonId, setLessonId] = useLessonIdContext();
+    console.log("LessonId that is seen in coding.tsx is ", lessonId)
 
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertMessage, setAlertMessage] = useState<string>('There was an error saving the file.');

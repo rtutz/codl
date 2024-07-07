@@ -1,5 +1,6 @@
 "use client"
 import { useMarkdown } from "@/providers/markdownProvider"
+import { useLessonIdContext } from "@/app/context/lessonContext"
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import AlertUI from "../error";
@@ -16,6 +17,10 @@ export default function Lecture({ lectureContent, lessonID, markdown, setMarkdow
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertMessage, setAlertMessage] = useState<string>('There was an error saving the file.');
     const [alertStyling, setAlertStyling] = useState<"default" | "destructive" | null | undefined>('destructive');
+
+    const [lessonId, setLessonId] = useLessonIdContext();
+    console.log("LessonId that is seen in lecture.tsx is ", lessonId)
+
 
     useEffect(() => {
         let timeout: ReturnType<typeof setTimeout> | undefined;
