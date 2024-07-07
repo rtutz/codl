@@ -58,10 +58,28 @@ export default async function handler(
             console.error(error);
             return res.status(500).json(error);
         }
-    }
-    
-    else {
+    } else if (req.method === 'POST') {
+        try {
+            const lessonID = req.body?.lessonId;
+
+            if (lessonID) {
+                const response = await client.codingQuestion.create({
+                    data: {
+                        lessonId: lessonID,
+                        markdown: ''
+                    }
+                })
+
+                return res.status(200).json(response)
+            }
+
+
+        } catch(error) {
+            console.error(error);
+            return res.status(500).json(error);
+        }
+    } else {
         res.status(405).json({ message: 'Method not allowed' });
-    }
+    } 
 }
 
