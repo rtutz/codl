@@ -58,6 +58,18 @@ export default async function handler(
                 }
             })
 
+            const lessonId = response.id
+
+            if (response) {
+                // Make an empty question associated to this lesson
+                const createdQuestion = await client.codingQuestion.create({
+                    data: {
+                        lessonId: lessonId,
+                        markdown: ''
+                    }
+                })
+            }
+
             return res.status(200).json(response);
         } catch (error) {
             console.error(error);
