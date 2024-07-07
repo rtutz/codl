@@ -58,17 +58,19 @@ export default async function handler(
                 }
             })
 
-            const lessonId = response.id
+            // The code below makes a codingQusetion entry automatically for when
+            // 
+            // const lessonId = response.id
 
-            if (response) {
-                // Make an empty question associated to this lesson
-                const createdQuestion = await client.codingQuestion.create({
-                    data: {
-                        lessonId: lessonId,
-                        markdown: ''
-                    }
-                })
-            }
+            // if (response) {
+            //     // Make an empty question associated to this lesson
+            //     const createdQuestion = await client.codingQuestion.create({
+            //         data: {
+            //             lessonId: lessonId,
+            //             markdown: ''
+            //         }
+            //     })
+            // }
 
             return res.status(200).json(response);
         } catch (error) {
