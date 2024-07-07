@@ -12,7 +12,6 @@ interface IQuizView {
 
 export default function QuizView({ lessonID }: IQuizView) {
     const [lessonId, setLessonId] = useLessonIdContext();
-    console.log("LessonId that is seen in coding.tsx is ", lessonId)
 
     return (
         // 

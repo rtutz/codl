@@ -30,37 +30,18 @@ interface ICodingQuestion {
 
 export default function Coding({ lessonID, codingQuestions, setCodingQuestions }: ICoding) {
     const [currQuestion, setCurrQuestion] = useState<ICodingQuestion>();
+
+    // TODO: Ensure that when I create a new lesson, I have at least one question associated with it.
+    useEffect(() => {
+        if (codingQuestions) {
+            setCurrQuestion(codingQuestions[0]);
+        }
+    }, [])
     const [lessonId, setLessonId] = useLessonIdContext();
 
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertMessage, setAlertMessage] = useState<string>('There was an error saving the file.');
     const [alertStyling, setAlertStyling] = useState<"default" | "destructive" | null | undefined>('destructive');
-
-    console.log(codingQuestions)
-
-    // Get all Coding Questions associated for this lesson. Updates codingQuestions.
-    useEffect(() => {
-        async function getData() {
-            try {
-                console.log("Get data called");
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/codingquestion?lesson_id=${lessonID}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    cache: 'no-store',
-                });
-
-                const data = await response.json();
-                setCodingQuestions(data);
-                setCurrQuestion(data[0]);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
-
-        getData();
-    }, [lessonID]);
 
     function updateCurrQuestionNum(chosenQuestion: ICodingQuestion) {
         setCurrQuestion(chosenQuestion);
@@ -73,10 +54,10 @@ export default function Coding({ lessonID, codingQuestions, setCodingQuestions }
                 markdown: newMarkdown,
             };
             setCurrQuestion(updatedQuestion);
-            
+
             // Update the question in codingQuestions array
-            setCodingQuestions(prevQuestions => 
-                prevQuestions?.map(q => 
+            setCodingQuestions(prevQuestions =>
+                prevQuestions?.map(q =>
                     q.id === updatedQuestion.id ? updatedQuestion : q
                 )
             );
@@ -97,7 +78,7 @@ export default function Coding({ lessonID, codingQuestions, setCodingQuestions }
 
     async function saveMarkdown() {
         if (!currQuestion) return; // Early return if currQuestion is undefined
-    
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/codingquestion?id=${currQuestion.id}`, {
             method: 'PATCH',
             headers: {
@@ -106,7 +87,7 @@ export default function Coding({ lessonID, codingQuestions, setCodingQuestions }
             body: JSON.stringify({ markdown: currQuestion.markdown }),
             cache: 'no-store',
         });
-    
+
         if (!response.ok) {
             setShowAlert(true);
             setAlertMessage('There was an error saving the file.');
@@ -115,14 +96,14 @@ export default function Coding({ lessonID, codingQuestions, setCodingQuestions }
             setShowAlert(true);
             setAlertMessage("Successfully saved markdown file.");
             setAlertStyling("default");
-    
+
             // Update currQuestion (this is not strictly necessary if you're not changing anything)
-            setCurrQuestion({...currQuestion});
-    
+            setCurrQuestion({ ...currQuestion });
+
             // Update codingQuestions
-            setCodingQuestions(prevQuestions => 
-                prevQuestions?.map(q => 
-                    q.id === currQuestion.id ? {...currQuestion} : q
+            setCodingQuestions(prevQuestions =>
+                prevQuestions?.map(q =>
+                    q.id === currQuestion.id ? { ...currQuestion } : q
                 )
             );
         }

@@ -61,7 +61,6 @@ function LessonContent() {
 
     // For Lecture
     const { markdown, setMarkdown } = useMarkdown();
-    console.log("markdown is", markdown);
 
     // For coding
     const [codingQuestions, setCodingQuestions] = useState<ICodingQuestion[]>();
@@ -77,7 +76,26 @@ function LessonContent() {
             }
         }
 
+        async function getCodingQuestions() {
+            try {
+                console.log("getCodingQuestions called");
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/codingquestion?lesson_id=${lessonID}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    cache: 'no-store',
+                });
+
+                const data = await response.json();
+                setCodingQuestions(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
         fetchLesson();
+        getCodingQuestions();
     }, [])
 
     function updateView(view: string) {
@@ -105,11 +123,11 @@ function LessonContent() {
 
                 {currentView === "coding" &&
                     <MarkdownProvider>
-                        <Coding 
-                        lessonID={lessonID} 
-                        codingQuestions={codingQuestions}
-                        setCodingQuestions={setCodingQuestions}
-                    />
+                        <Coding
+                            lessonID={lessonID}
+                            codingQuestions={codingQuestions}
+                            setCodingQuestions={setCodingQuestions}
+                        />
                     </MarkdownProvider>
                 }
 

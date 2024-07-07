@@ -32,7 +32,6 @@ export default function DisplayClasses({ classID, name, deleteEntireClass, userI
             return;
         } else {
             const responseData = await response.json();
-            console.log(responseData);
             updateDisplayedClasses(classID);
         }
 

@@ -43,7 +43,6 @@ export default function TestCases({ codingQuestionId }: ITestCasesProp) {
 
                 const data = await response.json();
                 setTestCases(data);
-                console.log(data);
 
             } catch (error) {
                 console.error('Error fetching data:', error);

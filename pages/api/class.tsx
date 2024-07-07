@@ -32,8 +32,6 @@ export default async function handler(
                 })
             }
 
-            console.log(role, classID);
-
             const updatedUserClassMap = await client.userClassMap.create({
                 data: {
                     userID: userID,

@@ -19,7 +19,6 @@ export default function Lecture({ lectureContent, lessonID, markdown, setMarkdow
     const [alertStyling, setAlertStyling] = useState<"default" | "destructive" | null | undefined>('destructive');
 
     const [lessonId, setLessonId] = useLessonIdContext();
-    console.log("LessonId that is seen in lecture.tsx is ", lessonId)
 
 
     useEffect(() => {
