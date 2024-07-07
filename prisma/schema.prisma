@@ -70,13 +70,13 @@ model Quiz {
   choice4       String
   correctAnswer Int
   lessonId      String
-  lesson        Lesson @relation(fields: [lessonId], references: [id])
+  lesson        Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 }
 
 model CodingQuestion {
   id        String      @id @unique @default(dbgenerated("gen_random_uuid()"))
   lessonId  String
-  lesson    Lesson      @relation(fields: [lessonId], references: [id])
+  lesson    Lesson      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   markdown  String
   TestCases TestCases[]
 }
@@ -85,7 +85,7 @@ model TestCases {
   id        String      @id @unique @default(dbgenerated("gen_random_uuid()"))
   input          String
   output         String
-  codingQuestion CodingQuestion @relation(fields: [codingQuestionId], references: [id])
+  codingQuestion CodingQuestion @relation(fields: [codingQuestionId], references: [id], onDelete: Cascade)
   codingQuestionId String
 }
 
