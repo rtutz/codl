@@ -19,6 +19,12 @@ interface Lesson {
     published: boolean;
 }
 
+interface ICodingQuestion {
+    id: string,
+    lessonId: string,
+    markdown: string
+}
+
 async function getLesson(lesson_id: string | undefined) {
     try {
         if (!lesson_id) {
@@ -56,6 +62,10 @@ function LessonContent() {
     // For Lecture
     const { markdown, setMarkdown } = useMarkdown();
     console.log("markdown is", markdown);
+
+    // For coding
+    const [codingQuestions, setCodingQuestions] = useState<ICodingQuestion[]>();
+
 
     useEffect(() => {
         async function fetchLesson() {
@@ -95,7 +105,11 @@ function LessonContent() {
 
                 {currentView === "coding" &&
                     <MarkdownProvider>
-                        <Coding lessonID={lessonID} />
+                        <Coding 
+                        lessonID={lessonID} 
+                        codingQuestions={codingQuestions}
+                        setCodingQuestions={setCodingQuestions}
+                    />
                     </MarkdownProvider>
                 }
 

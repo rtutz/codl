@@ -16,9 +16,10 @@ import {
 import TestCases from "../testCases"
 
 interface ICoding {
-    lessonID: string
+    lessonID: string;
+    codingQuestions: ICodingQuestion[] | undefined;
+    setCodingQuestions: React.Dispatch<React.SetStateAction<ICodingQuestion[] | undefined>>;
 }
-
 interface ICodingQuestion {
     id: string,
     lessonId: string,
@@ -27,20 +28,21 @@ interface ICodingQuestion {
 
 
 
-export default function Coding({ lessonID }: ICoding) {
+export default function Coding({ lessonID, codingQuestions, setCodingQuestions }: ICoding) {
     const [currQuestion, setCurrQuestion] = useState<ICodingQuestion>();
-    const [codingQuestions, setCodingQuestions] = useState<ICodingQuestion[]>();
     const [lessonId, setLessonId] = useLessonIdContext();
-    console.log("LessonId that is seen in coding.tsx is ", lessonId)
 
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertMessage, setAlertMessage] = useState<string>('There was an error saving the file.');
     const [alertStyling, setAlertStyling] = useState<"default" | "destructive" | null | undefined>('destructive');
 
+    console.log(codingQuestions)
+
     // Get all Coding Questions associated for this lesson. Updates codingQuestions.
     useEffect(() => {
         async function getData() {
             try {
+                console.log("Get data called");
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/codingquestion?lesson_id=${lessonID}`, {
                     method: 'GET',
                     headers: {
@@ -66,10 +68,18 @@ export default function Coding({ lessonID }: ICoding) {
 
     const updateQuestionMarkdown = (newMarkdown: string) => {
         if (currQuestion) {
-            setCurrQuestion({
+            const updatedQuestion = {
                 ...currQuestion,
                 markdown: newMarkdown,
-            });
+            };
+            setCurrQuestion(updatedQuestion);
+            
+            // Update the question in codingQuestions array
+            setCodingQuestions(prevQuestions => 
+                prevQuestions?.map(q => 
+                    q.id === updatedQuestion.id ? updatedQuestion : q
+                )
+            );
         }
     };
 
@@ -86,29 +96,35 @@ export default function Coding({ lessonID }: ICoding) {
     }, [showAlert]);
 
     async function saveMarkdown() {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/codingquestion?id=${currQuestion?.id}`, {
+        if (!currQuestion) return; // Early return if currQuestion is undefined
+    
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/codingquestion?id=${currQuestion.id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ markdown: currQuestion?.markdown }),
+            body: JSON.stringify({ markdown: currQuestion.markdown }),
             cache: 'no-store',
         });
-
+    
         if (!response.ok) {
             setShowAlert(true);
-            return;
+            setAlertMessage('There was an error saving the file.');
+            setAlertStyling('destructive');
         } else {
             setShowAlert(true);
             setAlertMessage("Successfully saved markdown file.");
             setAlertStyling("default");
-
-            if (currQuestion && codingQuestions) {
-                const updatedCodingQuestions = codingQuestions.map((question) =>
-                    question.id === currQuestion.id ? currQuestion : question
-                );
-                setCodingQuestions(updatedCodingQuestions);
-            }
+    
+            // Update currQuestion (this is not strictly necessary if you're not changing anything)
+            setCurrQuestion({...currQuestion});
+    
+            // Update codingQuestions
+            setCodingQuestions(prevQuestions => 
+                prevQuestions?.map(q => 
+                    q.id === currQuestion.id ? {...currQuestion} : q
+                )
+            );
         }
     }
 
