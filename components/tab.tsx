@@ -22,7 +22,7 @@ export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionN
     const [lessonId, setLessonId] = useLessonIdContext();
 
     const [showAlert, setShowAlert] = useState<boolean>(false);
-    const alertMessage = 'There was an error creating the new question.';
+    let alertMessage = 'There was an error creating the new question.';
     const alertStyling = 'destructive'
 
     const addNewTab = async () => {
@@ -69,15 +69,35 @@ export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionN
     }, [showAlert]);
 
 
-    const removeTab = (questionToRemove: ICodingQuestion) => {
-        setCodingQuestions(prev => {
-            if (!prev) return prev;
-            const newQuestions = prev.filter(q => q.id !== questionToRemove.id);
-            if (newQuestions.length > 0 && currQuestion?.id === questionToRemove.id) {
-                updateCurrQuestionNum(newQuestions[0]);
+    const removeTab = async (questionToRemove: ICodingQuestion) => {
+        try {
+            // Make a DELETE request to remove the coding question
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/codingquestion?id=${questionToRemove.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to delete coding question');
             }
-            return newQuestions;
-        });
+    
+            // If the delete request was successful, update the local state
+            setCodingQuestions(prev => {
+                if (!prev) return prev;
+                const newQuestions = prev.filter(q => q.id !== questionToRemove.id);
+                if (newQuestions.length > 0 && currQuestion?.id === questionToRemove.id) {
+                    updateCurrQuestionNum(newQuestions[0]);
+                }
+                return newQuestions;
+            });
+    
+        } catch (error) {
+            console.error('Error removing tab:', error);
+            alertMessage = "Error deleting the coding question";
+            setShowAlert(true);
+        }
     };
 
     return (

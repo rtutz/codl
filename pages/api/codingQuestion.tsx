@@ -14,7 +14,7 @@ export default async function handler(
     if (req.method === 'GET') {
         try {
             const lessonID = req.query.lesson_id ? (req.query.lesson_id as string) : undefined;
-            
+
             if (lessonID) {
                 const response = await client.codingQuestion.findMany({
                     where: {
@@ -54,7 +54,7 @@ export default async function handler(
             }
 
 
-        } catch(error) {
+        } catch (error) {
             console.error(error);
             return res.status(500).json(error);
         }
@@ -74,12 +74,25 @@ export default async function handler(
             }
 
 
-        } catch(error) {
+        } catch (error) {
             console.error(error);
             return res.status(500).json(error);
         }
-    } else {
+    } else if (req.method === 'DELETE') {
+        const codingquestionID = req.query.id ? (req.query.id as string) : undefined;
+
+        if (codingquestionID) {
+            const response = await client.codingQuestion.delete({
+                where: {
+                    id: codingquestionID
+                }
+            })
+            return res.status(200).json(response)
+        }
+    }
+
+    else {
         res.status(405).json({ message: 'Method not allowed' });
-    } 
+    }
 }
 
