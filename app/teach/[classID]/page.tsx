@@ -2,7 +2,7 @@
 import { redirect, useParams } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation'
-import { ChevronLeftIcon, Pencil1Icon, PersonIcon, PlusIcon } from "@radix-ui/react-icons"
+import { ChevronLeftIcon, Pencil1Icon, PersonIcon } from "@radix-ui/react-icons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {

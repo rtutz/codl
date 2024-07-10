@@ -4,6 +4,8 @@ import { useLessonIdContext } from "@/app/context/lessonContext"
 import IndividualQuiz from "../individualQuiz";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "@radix-ui/react-icons"
+
 
 interface IQuizQuestion {
     id: number;
@@ -77,21 +79,36 @@ export default function QuizView({ lessonID }: { lessonID: string }) {
     };
 
     return (
-        <div className="mt-4">
-            <div className="quiz-navigation flex justify-between mb-4">
-                <Button onClick={handlePreviousQuestion} disabled={currentQuestionIndex === 0}>
-                    Previous Question
-                </Button>
-                <span className="text-white">Question {currentQuestionIndex + 1} of {quizQuestions.length}</span>
-                <Button onClick={handleNextQuestion}>
-                    {currentQuestionIndex === quizQuestions.length - 1 ? 'Add New Question' : 'Next Question'}
-                </Button>
+        <div className="mt-10 w-11/12 mx-auto">
+            <div className="mt-4">
+                <div className="quiz-navigation flex justify-between items-center mb-4">
+                    <Button
+                        onClick={handlePreviousQuestion}
+                        disabled={currentQuestionIndex === 0}
+                        variant="ghost"
+                        size="icon"
+                    >
+                        <ChevronLeftIcon className="h-6 w-6" />
+                    </Button>
+                    <span className="text-white">Question {currentQuestionIndex + 1} of {quizQuestions.length}</span>
+                    <Button
+                        onClick={handleNextQuestion}
+                        variant="ghost"
+                        size="icon"
+                    >
+                        {currentQuestionIndex === quizQuestions.length - 1 ? (
+                            <PlusIcon className="h-6 w-6" />
+                        ) : (
+                            <ChevronRightIcon className="h-6 w-6" />
+                        )}
+                    </Button>
+                </div>
+                <IndividualQuiz
+                    key={quizQuestions[currentQuestionIndex].id}
+                    question={quizQuestions[currentQuestionIndex]}
+                    onUpdate={updateQuizQuestion}
+                />
             </div>
-            <IndividualQuiz
-                key={quizQuestions[currentQuestionIndex].id}
-                question={quizQuestions[currentQuestionIndex]}
-                onUpdate={updateQuizQuestion}
-            />
         </div>
     );
 }
