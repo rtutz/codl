@@ -125,7 +125,6 @@ function LessonContent() {
 
         async function getCodingQuestions() {
             try {
-                console.log("getCodingQuestions called");
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/codingquestion?lesson_id=${lessonID}`, {
                     method: 'GET',
                     headers: {
@@ -136,6 +135,22 @@ function LessonContent() {
 
                 const data = await response.json();
                 setCodingQuestions(data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        async function getQuiz() {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/quiz?lesson_id=${lessonID}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    cache: 'no-store',
+                });
+                const data = await response.json();
+                setQuizQuestions(data);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
