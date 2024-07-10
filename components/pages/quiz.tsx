@@ -2,7 +2,7 @@
 
 import { useLessonIdContext } from "@/app/context/lessonContext"
 import IndividualQuiz from "../individualQuiz";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "@radix-ui/react-icons"
 
@@ -14,45 +14,15 @@ interface IQuizQuestion {
     hint: string;
 }
 
-const quizData: IQuizQuestion[] = [
-    {
-        id: 1,
-        question: "Which of the following are primary colors?",
-        choices: [
-            { text: "Red", isCorrect: true },
-            { text: "Green", isCorrect: false },
-            { text: "Blue", isCorrect: true },
-            { text: "Yellow", isCorrect: true }
-        ],
-        hint: "Think about the colors you can't create by mixing other colors."
-    },
-    {
-        id: 2,
-        question: "Which planets in our solar system have rings?",
-        choices: [
-            { text: "Mars", isCorrect: false },
-            { text: "Jupiter", isCorrect: true },
-            { text: "Saturn", isCorrect: true },
-            { text: "Uranus", isCorrect: true }
-        ],
-        hint: "Saturn is the most famous for its rings, but it's not alone."
-    },
-    {
-        id: 3,
-        question: "Which of these languages use a non-Latin script?",
-        choices: [
-            { text: "French", isCorrect: false },
-            { text: "Russian", isCorrect: true },
-            { text: "Arabic", isCorrect: true },
-            { text: "Korean", isCorrect: true }
-        ],
-        hint: "Consider writing systems that look distinctly different from the English alphabet."
-    }
-];
+interface Props {
+    lessonID: string;
+    quizQuestions: IQuizQuestion[];
+    setQuizQuestions: React.Dispatch<React.SetStateAction<IQuizQuestion[]>>;
+}
 
-export default function QuizView({ lessonID }: { lessonID: string }) {
+export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: Props) {
     const [lessonId, setLessonId] = useLessonIdContext();
-    const [quizQuestions, setQuizQuestions] = useState<IQuizQuestion[]>(quizData);
+    const [reload, setReload] = useState(true);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
     const handleNextQuestion = () => {
@@ -73,12 +43,14 @@ export default function QuizView({ lessonID }: { lessonID: string }) {
     };
 
     const updateQuizQuestion = (updatedQuestion: IQuizQuestion) => {
+        console.log("updateQuizQuestion being called", updatedQuestion);
         const newQuizQuestions = [...quizQuestions];
         newQuizQuestions[currentQuestionIndex] = updatedQuestion;
         setQuizQuestions(newQuizQuestions);
     };
 
     return (
+        quizQuestions.length !== 0 &&
         <div className="mt-10 w-11/12 mx-auto">
             <div className="mt-4">
                 <div className="quiz-navigation flex justify-between items-center mb-4">
@@ -104,7 +76,7 @@ export default function QuizView({ lessonID }: { lessonID: string }) {
                     </Button>
                 </div>
                 <IndividualQuiz
-                    key={quizQuestions[currentQuestionIndex].id}
+                    key={quizQuestions[currentQuestionIndex].id} 
                     question={quizQuestions[currentQuestionIndex]}
                     onUpdate={updateQuizQuestion}
                 />
