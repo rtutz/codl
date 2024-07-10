@@ -5,13 +5,15 @@ import IndividualQuiz from "../individualQuiz";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "@radix-ui/react-icons"
+import { FaSave } from "react-icons/fa";
 
 
 interface IQuizQuestion {
-    id: number;
+    id?: number;
     question: string;
-    choices: { text: string; isCorrect: boolean }[];
+    choices: { text: string; isCorrect: boolean, id: string }[];
     hint: string;
+    modified: boolean
 }
 
 interface Props {
@@ -21,18 +23,18 @@ interface Props {
 }
 
 export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: Props) {
-    const [lessonId, setLessonId] = useLessonIdContext();
-    const [reload, setReload] = useState(true);
+    // const [lessonId, setLessonId] = useLessonIdContext();
+    console.log(quizQuestions);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
     const handleNextQuestion = () => {
         if (currentQuestionIndex === quizQuestions.length - 1) {
             // Add a new question
             setQuizQuestions([...quizQuestions, {
-                id: quizQuestions.length + 1,
                 question: '',
-                choices: Array(4).fill({ text: '', isCorrect: false }),
-                hint: ''
+                choices: Array(4).fill({ text: '', isCorrect: false, id: null }),
+                hint: '',
+                modified: true
             }]);
         }
         setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -43,16 +45,44 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
     };
 
     const updateQuizQuestion = (updatedQuestion: IQuizQuestion) => {
-        console.log("updateQuizQuestion being called", updatedQuestion);
         const newQuizQuestions = [...quizQuestions];
         newQuizQuestions[currentQuestionIndex] = updatedQuestion;
+        newQuizQuestions[currentQuestionIndex].modified = true;
+        console.log(newQuizQuestions);
         setQuizQuestions(newQuizQuestions);
     };
 
+    const handleSaveQuestions = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/quiz?lesson_id=${lessonID}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                cache: 'no-store',
+                body: JSON.stringify({questions: quizQuestions})
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            return null;
+        }
+    }
+
     return (
-        quizQuestions.length !== 0 &&
         <div className="mt-10 w-11/12 mx-auto">
             <div className="mt-4">
+                <div className="w-full flex justify-end mb-4">
+                    <Button
+                        onClick={handleSaveQuestions}
+                        variant="default"
+                    >
+                        <FaSave className="mr-2 h-4 w-4" /> Save Questions
+                    </Button>
+                </div>
                 <div className="quiz-navigation flex justify-between items-center mb-4">
                     <Button
                         onClick={handlePreviousQuestion}
@@ -62,24 +92,33 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
                     >
                         <ChevronLeftIcon className="h-6 w-6" />
                     </Button>
-                    <span className="text-white">Question {currentQuestionIndex + 1} of {quizQuestions.length}</span>
+                    <span className="text-white">
+                        {quizQuestions.length === 0
+                            ? "No questions yet"
+                            : `Question ${currentQuestionIndex + 1} of ${quizQuestions.length}`
+                        }
+                    </span>
                     <Button
                         onClick={handleNextQuestion}
                         variant="ghost"
                         size="icon"
                     >
-                        {currentQuestionIndex === quizQuestions.length - 1 ? (
+                        {quizQuestions.length === 0 || currentQuestionIndex === quizQuestions.length - 1 ? (
                             <PlusIcon className="h-6 w-6" />
                         ) : (
                             <ChevronRightIcon className="h-6 w-6" />
                         )}
                     </Button>
                 </div>
-                <IndividualQuiz
-                    key={quizQuestions[currentQuestionIndex].id} 
-                    question={quizQuestions[currentQuestionIndex]}
-                    onUpdate={updateQuizQuestion}
-                />
+                {quizQuestions.length > 0 && (
+                    <IndividualQuiz
+                        question={quizQuestions[currentQuestionIndex]}
+                        onUpdate={updateQuizQuestion}
+                    />
+                )}
+                <div className="mt-6 flex justify-center">
+
+                </div>
             </div>
         </div>
     );

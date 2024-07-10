@@ -4,10 +4,11 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 
 interface IQuizQuestion {
-    id: number;
+    id?: number;
     question: string;
-    choices: { text: string; isCorrect: boolean }[];
+    choices: { text: string; isCorrect: boolean, id: string }[];
     hint: string;
+    modified: boolean
   }
   
   interface IndividualQuizProps {

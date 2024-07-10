@@ -26,48 +26,13 @@ interface ICodingQuestion {
 }
 
 interface IQuizQuestion {
-    id: number;
+    id?: number;
     question: string;
-    choices: { text: string; isCorrect: boolean }[];
+    choices: { text: string; isCorrect: boolean, id: string }[];
     hint: string;
+    modified: boolean
 }
 
-
-const quizData: IQuizQuestion[] = [
-    {
-        id: 1,
-        question: "Which of the following are primary colors?",
-        choices: [
-            { text: "Red", isCorrect: true },
-            { text: "Green", isCorrect: false },
-            { text: "Blue", isCorrect: true },
-            { text: "Yellow", isCorrect: true }
-        ],
-        hint: "Think about the colors you can't create by mixing other colors."
-    },
-    {
-        id: 2,
-        question: "Which planets in our solar system have rings?",
-        choices: [
-            { text: "Mars", isCorrect: false },
-            { text: "Jupiter", isCorrect: true },
-            { text: "Saturn", isCorrect: true },
-            { text: "Uranus", isCorrect: true }
-        ],
-        hint: "Saturn is the most famous for its rings, but it's not alone."
-    },
-    {
-        id: 3,
-        question: "Which of these languages use a non-Latin script?",
-        choices: [
-            { text: "French", isCorrect: false },
-            { text: "Russian", isCorrect: true },
-            { text: "Arabic", isCorrect: true },
-            { text: "Korean", isCorrect: true }
-        ],
-        hint: "Consider writing systems that look distinctly different from the English alphabet."
-    }
-];
 
 async function getLesson(lesson_id: string | undefined) {
     try {
