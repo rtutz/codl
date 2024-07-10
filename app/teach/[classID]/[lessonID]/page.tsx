@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import SideNav from "@/components/sideNav";
 import Coding from "@/components/pages/coding";
-import QuizView from "@/components/pages/quizVIew";
+import QuizView from "@/components/pages/quiz";
 import { useMarkdown } from "@/providers/markdownProvider"
 import { LessonIdProvider } from '../../../context/lessonContext'
 import { useLessonIdContext } from "../../../context/lessonContext";
