@@ -101,7 +101,9 @@ function LessonContent() {
     const [lesson, setLesson] = useState<Lesson>();
 
     const [lessonId, setLessonId] = useLessonIdContext();
-    setLessonId(lessonID);
+    useEffect(() => {
+        setLessonId(lessonID);
+    }, [])
 
     // For Lecture
     const { markdown, setMarkdown } = useMarkdown();
@@ -110,7 +112,7 @@ function LessonContent() {
     const [codingQuestions, setCodingQuestions] = useState<ICodingQuestion[]>();
 
     // For quiz
-    const [quizQuestions, setQuizQuestions] = useState<IQuizQuestion[]>(quizData);
+    const [quizQuestions, setQuizQuestions] = useState<IQuizQuestion[]>([]);
 
 
     useEffect(() => {
@@ -158,6 +160,7 @@ function LessonContent() {
 
         fetchLesson();
         getCodingQuestions();
+        getQuiz();
     }, [])
 
     function updateView(view: string) {

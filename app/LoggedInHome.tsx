@@ -172,6 +172,7 @@ export default function LoggedInHome() {
                             {/* Would be the individual class */}
                             {teacherClasses.map((item, i) => (
                                 <DisplayClasses
+                                    key={i}
                                     classID={item.id} name={item.name}
                                     deleteEntireClass={true}
                                     userID={session?.user?.id}

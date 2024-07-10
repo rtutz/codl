@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from "react";
 const Context = createContext();
 
 export function LessonIdProvider({ children }) {
-    const [lessonId, setLessonId] = useState('Testing');
+    const [lessonId, setLessonId] = useState('');
     return (
       <Context.Provider value={[lessonId, setLessonId]}>{children}</Context.Provider>
     );

@@ -53,7 +53,7 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
         quizQuestions.length !== 0 &&
         <div className="mt-10 w-11/12 mx-auto">
             <div className="mt-4">
-                <div className="quiz-navigation flex justify-between items-center mb-4">
+                {/* <div className="quiz-navigation flex justify-between items-center mb-4">
                     <Button
                         onClick={handlePreviousQuestion}
                         disabled={currentQuestionIndex === 0}
@@ -79,7 +79,7 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
                     key={quizQuestions[currentQuestionIndex].id} 
                     question={quizQuestions[currentQuestionIndex]}
                     onUpdate={updateQuizQuestion}
-                />
+                /> */}
             </div>
         </div>
     );
