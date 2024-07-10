@@ -78,11 +78,11 @@ export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionN
                     'Content-Type': 'application/json',
                 },
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to delete coding question');
             }
-    
+
             // If the delete request was successful, update the local state
             setCodingQuestions(prev => {
                 if (!prev) return prev;
@@ -92,7 +92,7 @@ export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionN
                 }
                 return newQuestions;
             });
-    
+
         } catch (error) {
             console.error('Error removing tab:', error);
             alertMessage = "Error deleting the coding question";
@@ -108,35 +108,43 @@ export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionN
             <div className="w-1/2">
                 <div className="flex min-w-full">
                     {codingQuestions?.map((item, index) => (
-                        <button
+                        <div
                             key={item.id}
-                            className={`px-4 py-2 rounded-t-2xl transition-colors duration-300 flex-shrink-0 ${item.id === currQuestion?.id
-                                ? 'bg-gray-800 text-white'
-                                : 'text-gray-300 hover:bg-gray-700'
+                            className={`px-4 py-2 rounded-t-2xl transition-colors duration-300 flex-shrink-0 flex items-center ${item.id === currQuestion?.id
+                                    ? 'bg-gray-800 text-white'
+                                    : 'text-gray-300 hover:bg-gray-700'
                                 }`}
-                            onClick={() => updateCurrQuestionNum(item)}>
-                            Question #{index + 1}
+                        >
+                            <button
+                                onClick={() => updateCurrQuestionNum(item)}
+                                className="flex-grow text-left"
+                            >
+                                Question #{index + 1}
+                            </button>
 
                             {item.id === currQuestion?.id && (
                                 <button
                                     className="ml-2 text-gray-500 hover:text-white text-lg"
-                                    onClick={() => removeTab(item)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        removeTab(item);
+                                    }}
                                 >
                                     ×
                                 </button>
                             )}
-                        </button>
+                        </div>
                     ))}
 
                     <button
                         className="px-4 rounded-t-lg transition-colors duration-300 
-                        text-gray-300 hover:bg-gray-700 flex-shrink-0"
+                text-gray-300 hover:bg-gray-700 flex-shrink-0"
                         onClick={addNewTab}
                     >
                         +
                     </button>
                 </div>
             </div>
-
-        </>)
+        </>
+    )
 }
