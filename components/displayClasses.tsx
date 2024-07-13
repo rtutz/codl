@@ -1,7 +1,6 @@
 "use client"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import Link from "next/link"
 import { Cross1Icon } from "@radix-ui/react-icons"
 import { useState } from "react"
 import AlertUI from "./error"
@@ -16,6 +15,7 @@ interface IClass {
 
 export default function DisplayClasses({ classID, name, deleteEntireClass, userID, updateDisplayedClasses }: IClass) {
     const [showAlert, setShowAlert] = useState<boolean>(false);
+    // const [setClassID, setRole] = useClassRole()
 
     async function deleteClass() {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/class`, {
@@ -42,15 +42,11 @@ export default function DisplayClasses({ classID, name, deleteEntireClass, userI
         <>
             {showAlert && <AlertUI message={"There was an error deleting this project."} styling={'destructive'}/>}
             <div className="flex justify-between items-center hover:text-white" key={classID}>
-                <Link href={`/teach/${classID}`}>
                     <Avatar>
                         <AvatarImage src="https://github.com/shadcn.png" />
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
-                </Link>
-                <Link href={`/teach/${classID}`}>
                     <button>{name}</button>
-                </Link>
                 <button onClick={deleteClass}>
                     <Cross1Icon />
                 </button>

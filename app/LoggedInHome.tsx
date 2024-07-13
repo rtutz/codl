@@ -13,6 +13,8 @@ import NewClassBtn from '@/components/newClassBtn';
 import JoinClassBtn from '@/components/joinClassBtn';
 import AlertUI from '@/components/error';
 import DisplayClasses from '@/components/displayClasses';
+import Link from "next/link";
+import { useClassRole } from "@/app/context/roleContext"
 
 declare module 'next-auth' {
     interface Session {
@@ -66,6 +68,10 @@ export default function LoggedInHome() {
     const [newClassName, setNewClassName] = useState<string>('');
     const [classID, setClassID] = useState<string>('');
     const [showAlert, setShowAlert] = useState<boolean>(false);
+
+
+    const { setClassID: setClassIDContext, role, setRole } = useClassRole();
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -143,13 +149,18 @@ export default function LoggedInHome() {
         );
     }
 
+    const handleClassClick = (classID: string, role: string) => {
+        setClassID(classID);
+        setRole(role);
+    };
+
     if (!session) {
         return null; // or render a loading state
     }
 
     return (
         <div>
-            {showAlert && <AlertUI message={"The given class ID do not exist or you are already teaching this class."} styling={'destructive'}/>}
+            {showAlert && <AlertUI message={"The given class ID do not exist or you are already teaching this class."} styling={'destructive'} />}
 
             {/* Back button */}
             <SignOutBtn />
@@ -171,12 +182,15 @@ export default function LoggedInHome() {
                         <CardContent className="gray p-0 space-y-6">
                             {/* Would be the individual class */}
                             {teacherClasses.map((item, i) => (
-                                <DisplayClasses
-                                    key={i}
-                                    classID={item.id} name={item.name}
-                                    deleteEntireClass={true}
-                                    userID={session?.user?.id}
-                                    updateDisplayedClasses={updateDisplayedClasses} />
+                                <Link href={`/teach/${item.id}`} key={`teacher-${i}`} onClick={() => handleClassClick(item.id, 'TEACHER')}>
+                                        <DisplayClasses
+                                            classID={item.id}
+                                            name={item.name}
+                                            deleteEntireClass={true}
+                                            userID={session?.user?.id}
+                                            updateDisplayedClasses={updateDisplayedClasses}
+                                        />
+                                </Link>
                             ))}
                         </CardContent>
                     </Card>
@@ -188,13 +202,18 @@ export default function LoggedInHome() {
                         <JoinClassBtn classID={classID} setClassID={setClassID} submitJoinClass={submitJoinClass} />
                     </div>
                     <Card className="p-5">
-                        <CardContent className="space-y-6 gray">
+                        <CardContent className="gray p-0 space-y-6 gray">
                             {/* Would be the individual class */}
                             {studentClasses.map((item, i) => (
-                                <DisplayClasses classID={item.id} name={item.name}
-                                    deleteEntireClass={false}
-                                    userID={session?.user?.id}
-                                    updateDisplayedClasses={updateDisplayedClasses} />
+                                <Link href={`/teach/${item.id}`} key={`student-${i}`} onClick={() => handleClassClick(item.id, 'STUDENT')}>
+                                        <DisplayClasses
+                                            classID={item.id}
+                                            name={item.name}
+                                            deleteEntireClass={false}
+                                            userID={session?.user?.id}
+                                            updateDisplayedClasses={updateDisplayedClasses}
+                                        />
+                                </Link>
                             ))}
                         </CardContent>
                     </Card>

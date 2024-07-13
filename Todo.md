@@ -16,6 +16,11 @@
 - A student joining a class should have the option to create an account or join class anonymously
 - A student should be able to run code for a problem and see if they passed all the test cases or not.
 
+### Student View
+- When a user logs in, find all classes where role is Student in ``UserClassMap``
+- When they click on a class, they must be able to see all lectures where published is true.
+
+
 
 # Development Notes:
 -  Running `npx prisma migrate dev --name <migration name>` updates DB based on prisma.schema
