@@ -8,8 +8,8 @@ import SideNav from "@/components/sideNav";
 import Coding from "@/components/pages/coding";
 import QuizView from "@/components/pages/quiz";
 import { useMarkdown } from "@/providers/markdownProvider"
-import { LessonIdProvider } from '../../../context/lessonContext'
-import { useLessonIdContext } from "../../../context/lessonContext";
+import { LessonIdProvider,useLessonIdContext } from '../../../context/lessonContext'
+import {  } from "../../../context/lessonContext";
 interface Lesson {
     classId: number;
     dueDate: Date;
@@ -64,6 +64,7 @@ function LessonContent() {
     const params = useParams<{ classID: string; lessonID: string }>()!;
     const [classID, lessonID] = [params.classID, params.lessonID];
     const [lesson, setLesson] = useState<Lesson>();
+
 
     const [lessonId, setLessonId] = useLessonIdContext();
     useEffect(() => {

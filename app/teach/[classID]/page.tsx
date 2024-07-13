@@ -4,7 +4,9 @@ import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation'
 import { ChevronLeftIcon, Pencil1Icon, PersonIcon } from "@radix-ui/react-icons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import { useClassRole } from "@/app/context/roleContext";
+
 import {
     Card,
     CardContent,
@@ -42,13 +44,13 @@ interface Class {
     name: string
 }
 
-async function getLessons(class_id: string | undefined) {
+async function getLessons(class_id: string | undefined, role: string | undefined) {
     try {
         if (!class_id) {
             throw new Error('class_id is required');
         }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson?class_id=${class_id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson?class_id=${class_id}&role=${role}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -104,7 +106,8 @@ function ClassHome() {
     const [classInfo, setClassInfo] = useState<Class>();
     const [newLessonName, setNewLessonName] = useState<string>('');
 
-    if (status !== "authenticated") redirect("/")
+    const { role } = useClassRole();
+    if (status !== "authenticated" || !role) redirect("/")
 
     const router = useRouter();
     const pathname = usePathname();
@@ -118,8 +121,8 @@ function ClassHome() {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (classID) {
-                const lessonsData = await getLessons(classID?.classID);
+            if (classID && role) {
+                const lessonsData = await getLessons(classID?.classID, role);
                 const transformedData: Lesson[] = lessonsData.map((lesson: any) => ({
                     ...lesson,
                     dueDate: new Date(lesson.dueDate), // Transform dueDate to a Date object
@@ -198,37 +201,34 @@ function ClassHome() {
                         </div>
                     </div>
                     <div>
-                        <button>
+                        {role === 'TEACHER' && <button>
                             <Pencil1Icon />
-                        </button>
+                        </button>}
 
                     </div>
 
                 </div>
 
                 {/* Manage Team Members */}
-                <button className="flex items-center space-x-4 text-xs gray max-w-fit">
+                {role === 'TEACHER' && <button className="flex items-center space-x-4 text-xs gray max-w-fit">
                     <PersonIcon /> <span>Manage Class Members</span>
-                </button>
+                </button>}
 
                 {/* Create new Project */}
-                <NewLessonBtn newLessonName={newLessonName} setNewLessonName={setNewLessonName} submitNewLesson={submitNewLesson}/>
+                {role === 'TEACHER' && <NewLessonBtn newLessonName={newLessonName} setNewLessonName={setNewLessonName} submitNewLesson={submitNewLesson} />}
                 <Card>
                     <Table>
                         <TableHeader>
                             <TableRow>
                                 <TableHead className="w-[300px]">Title</TableHead>
-                                {/* <TableHead>Due Date</TableHead>
-                                <TableHead>Submissions</TableHead> */}
-                                <TableHead className="text-right">Published</TableHead>
+                                {role === 'TEACHER' && <TableHead className="text-right">Published</TableHead>}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {lessons.map((lesson) => (
                                 <TableRow key={lesson.id} onClick={(e) => openProject(e, lesson.id)}>
                                     <TableCell className="font-medium">{lesson.name}</TableCell>
-                                    {/* <TableCell>{formatDate(lesson.dueDate)}</TableCell>
-                                    <TableCell>5/4</TableCell> */}
+                                    {role === 'TEACHER' && 
                                     <TableCell className="text-right">
                                         <Switch checked={lesson.published}
                                             onCheckedChange={(checked) => {
@@ -236,7 +236,7 @@ function ClassHome() {
                                             }}
                                             onClick={(e) => e.stopPropagation()}
                                         />
-                                    </TableCell>
+                                    </TableCell>}
                                 </TableRow>
                             ))}
                         </TableBody>
