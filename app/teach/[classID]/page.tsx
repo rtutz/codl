@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation'
 import { ChevronLeftIcon, Pencil1Icon, PersonIcon } from "@radix-ui/react-icons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button";
 import { useClassRole } from "@/app/context/roleContext";
 
 import {
@@ -228,15 +227,15 @@ function ClassHome() {
                             {lessons.map((lesson) => (
                                 <TableRow key={lesson.id} onClick={(e) => openProject(e, lesson.id)}>
                                     <TableCell className="font-medium">{lesson.name}</TableCell>
-                                    {role === 'TEACHER' && 
-                                    <TableCell className="text-right">
-                                        <Switch checked={lesson.published}
-                                            onCheckedChange={(checked) => {
-                                                switchPublish(lesson.id, checked);
-                                            }}
-                                            onClick={(e) => e.stopPropagation()}
-                                        />
-                                    </TableCell>}
+                                    {role === 'TEACHER' &&
+                                        <TableCell className="text-right">
+                                            <Switch checked={lesson.published}
+                                                onCheckedChange={(checked) => {
+                                                    switchPublish(lesson.id, checked);
+                                                }}
+                                                onClick={(e) => e.stopPropagation()}
+                                            />
+                                        </TableCell>}
                                 </TableRow>
                             ))}
                         </TableBody>

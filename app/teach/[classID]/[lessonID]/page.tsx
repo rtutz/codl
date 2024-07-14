@@ -2,14 +2,20 @@
 
 import Lecture from "@/components/pages/lecture"
 import MarkdownProvider from "@/providers/markdownProvider"
-import { useParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import SideNav from "@/components/sideNav";
 import Coding from "@/components/pages/coding";
 import QuizView from "@/components/pages/quiz";
 import { useMarkdown } from "@/providers/markdownProvider"
-import { LessonIdProvider,useLessonIdContext } from '../../../context/lessonContext'
-import {  } from "../../../context/lessonContext";
+import { LessonIdProvider, useLessonIdContext } from '../../../context/lessonContext'
+import { } from "../../../context/lessonContext";
+import { useSession } from "next-auth/react"
+import { useClassRole } from "@/app/context/roleContext";
+import StudentLecture from "@/components/student view/studentLecture";
+import StudentCoding from "@/components/student view/studentCoding";
+import StudentQuiz from "@/components/student view/studentQuiz";
+
 interface Lesson {
     classId: number;
     dueDate: Date;
@@ -64,6 +70,11 @@ function LessonContent() {
     const params = useParams<{ classID: string; lessonID: string }>()!;
     const [classID, lessonID] = [params.classID, params.lessonID];
     const [lesson, setLesson] = useState<Lesson>();
+
+    const { data: session, status, update } = useSession();
+    const { role } = useClassRole();
+    if (status !== "authenticated" || !role) redirect("/")
+
 
 
     const [lessonId, setLessonId] = useLessonIdContext();
@@ -133,6 +144,63 @@ function LessonContent() {
         setCurrentView(view);
     }
 
+    const renderContent = () => {
+        if (role === 'STUDENT') {
+            switch (currentView) {
+                case "lesson":
+                    return (
+                        <StudentLecture/>
+                    );
+                case "coding":
+                    return (
+                        <StudentCoding/>
+                    );
+                case "quiz":
+                    return (
+                        <StudentQuiz/>
+                    );
+                default:
+                    return null;
+            }
+        } else {
+            // Assuming 'TEACHER' role
+            switch (currentView) {
+                case "lesson":
+                    return (
+                        <MarkdownProvider>
+                            <Lecture
+                                lectureContent={lesson?.lectureContent || ''}
+                                lessonID={lessonID}
+                                markdown={markdown}
+                                setMarkdown={setMarkdown}
+                            />
+                        </MarkdownProvider>
+                    );
+                case "coding":
+                    return (
+                        <MarkdownProvider>
+                            <Coding
+                                lessonID={lessonID}
+                                codingQuestions={codingQuestions}
+                                setCodingQuestions={setCodingQuestions}
+                            />
+                        </MarkdownProvider>
+                    );
+                case "quiz":
+                    return (
+                        <QuizView
+                            lessonID={lessonID}
+                            quizQuestions={quizQuestions}
+                            setQuizQuestions={setQuizQuestions}
+                        />
+                    );
+                default:
+                    return null;
+            }
+        }
+    };
+
+
 
     return (
         <div className="flex min-h-screen">
@@ -140,36 +208,8 @@ function LessonContent() {
             <SideNav updateCurrentView={updateView} />
 
             <div className="flex-grow min-h-screen">
-
-                {currentView === "lesson" &&
-                    <MarkdownProvider>
-                        <Lecture
-                            lectureContent={lesson?.lectureContent || ''}
-                            lessonID={lessonID}
-                            markdown={markdown}
-                            setMarkdown={setMarkdown}
-                        />
-                    </MarkdownProvider>
-                }
-
-                {currentView === "coding" &&
-                    <MarkdownProvider>
-                        <Coding
-                            lessonID={lessonID}
-                            codingQuestions={codingQuestions}
-                            setCodingQuestions={setCodingQuestions}
-                        />
-                    </MarkdownProvider>
-                }
-
-                {currentView === "quiz" &&
-                    <QuizView lessonID={lessonID} quizQuestions={quizQuestions} setQuizQuestions={setQuizQuestions!}/>
-                }
-
-
-
+                {renderContent()}
             </div>
-
         </div>
     )
 }
@@ -177,7 +217,6 @@ function LessonContent() {
 export default function LessonPage() {
     return (
         <LessonIdProvider>
-
             <MarkdownProvider>
                 <LessonContent />
             </MarkdownProvider>
