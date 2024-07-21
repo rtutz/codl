@@ -149,7 +149,9 @@ function LessonContent() {
             switch (currentView) {
                 case "lesson":
                     return (
-                        <StudentLecture/>
+                        <StudentLecture
+                            lessonMarkdown={markdown}
+                        />
                     );
                 case "coding":
                     return (
