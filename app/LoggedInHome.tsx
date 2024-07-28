@@ -70,7 +70,7 @@ export default function LoggedInHome() {
     const [showAlert, setShowAlert] = useState<boolean>(false);
 
 
-    const { setClassID: setClassIDContext, role, setRole } = useClassRole();
+    const { setClassID: setClassIDContext, role, setRole, setUserId } = useClassRole();
 
 
     useEffect(() => {
@@ -152,6 +152,7 @@ export default function LoggedInHome() {
     const handleClassClick = (classID: string, role: string) => {
         setClassID(classID);
         setRole(role);
+        setUserId(session?.user?.id);
     };
 
     if (!session) {

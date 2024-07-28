@@ -13,7 +13,8 @@ import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import MarkdownPreview from "../markdownPreview";
 import { ViewUpdate } from '@codemirror/view';
-
+import { useClassRole } from "@/app/context/roleContext";
+import useDebounce from "@/lib/useDebounce";
 
 interface ICodingQuestion {
   id: string,
@@ -33,11 +34,37 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
   
   const [consoleOutput, setConsoleOutput] = useState('Testing');
   const [code, setCode] = useState('test');
-
   const [currQuestion, setCurrQuestion] = useState<ICodingQuestion>();
+
+  const { userId } = useClassRole();
+
+  useEffect(() => {
+    if (currQuestion) {
+      const questionId = currQuestion.id;
+
+      // Fetch data from the backend
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`/api/codingquestion?userId=${userId}&questionId=${questionId}`);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          console.log('backend response',data);
+          setCode(data.value);
+        } catch (error) {
+          console.error('Failed to fetch data:', error);
+        }
+      }
+
+      fetchData();
+    }
+}, [currQuestion])
+
   
   useEffect(() => {
     if (codingQuestions) {
+      console.log('first question', codingQuestions[0]);
         setCurrQuestion(codingQuestions[0]);
     }
 }, [])
@@ -50,10 +77,40 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
     setCurrQuestion(chosenQuestion);
   }
 
+  
+  const updateCode = async (value: string) => {
+    try {
+      const response = await fetch(`/api/codingquestion`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          questionId: currQuestion?.id,
+          value,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log('Updated code:', data);
+    } catch (error) {
+      console.error('Failed to update code:', error);
+    }
+  };
+
+  const debouncedUpdateCode = useDebounce(updateCode, 500);
+
+
   const onChange = useCallback((value: string, viewUpdate: ViewUpdate) => {
     console.log('value:', value);
     setCode(value);
-  }, []);
+    debouncedUpdateCode(value);
+  }, [debouncedUpdateCode]);
 
 
 

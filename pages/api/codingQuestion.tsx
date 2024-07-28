@@ -15,6 +15,9 @@ export default async function handler(
         try {
             const lessonID = req.query.lesson_id ? (req.query.lesson_id as string) : undefined;
 
+            const userId = req.query.userId as string;
+            const questionId = req.query.questionId as string;
+
             if (lessonID) {
                 const response = await client.codingQuestion.findMany({
                     where: {
@@ -25,8 +28,34 @@ export default async function handler(
                     }
                 })
 
+                if (!response) {
+                    return res.status(404).json({ error: 'Data not found' });
+                }
 
                 return res.status(200).json(response)
+            } else if (userId && questionId) {
+                let response = await client.userCodingMap.findUnique({
+                    where: {
+                        userId_codingQuestionId: {
+                            userId: userId,
+                            codingQuestionId: questionId,
+                        },
+                    },
+                });
+
+
+
+                if (!response) {
+                    // Create a new entry if it doesn't exist
+                    response = await client.userCodingMap.create({
+                        data: {
+                            userId: userId,
+                            codingQuestionId: questionId,
+                            value: '' // Initialize with an empty string
+                        }
+                    });
+                }
+                return res.status(200).json(response);
             }
 
             return res.status(500).json("Invalid endpoint.");
@@ -40,6 +69,8 @@ export default async function handler(
             const codingquestionID = req.query.id ? (req.query.id as string) : undefined;
             const markdownData = req.body?.markdown;
 
+            const { userId, questionId, value } = req.body as { userId: string; questionId: string; value: string };
+
             if (codingquestionID) {
                 const response = await client.codingQuestion.update({
                     where: {
@@ -51,9 +82,21 @@ export default async function handler(
                 })
 
                 return res.status(200).json(response)
+            } if (userId && questionId && value) {
+                const response = await client.userCodingMap.update({
+                    where: {
+                        userId_codingQuestionId: {
+                            userId: userId,
+                            codingQuestionId: questionId,
+                        },
+                    },
+                    data: {
+                        value: value
+                    }
+                });
+    
+                return res.status(200).json(response);
             }
-
-
         } catch (error) {
             console.error(error);
             return res.status(500).json(error);

@@ -7,12 +7,15 @@ const ClassRoleContext = createContext();
 export function ClassRoleProvider({ children }) {
     const [classID, setClassID] = useState('');
     const [role, setRole] = useState('');
+    const [userId, setUserId] = useState('');
     
     const value = {
         classID,
         setClassID,
         role,
-        setRole
+        setRole,
+        userId,
+        setUserId
     };
 
     return (
