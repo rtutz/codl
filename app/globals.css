@@ -75,7 +75,7 @@
 
   body {
     /* @apply bg-background text-foreground; */
-    @apply bg-gray-900 text-foreground;
+    @apply bg-background text-foreground;
   }
 
   .gray {

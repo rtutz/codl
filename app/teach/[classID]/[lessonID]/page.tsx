@@ -155,13 +155,16 @@ function LessonContent() {
                     );
                 case "coding":
                     return (
-                        <StudentCoding 
-                            codingQuestions={codingQuestions} 
-                            setCodingQuestions={setCodingQuestions}/>
+                        <StudentCoding
+                            codingQuestions={codingQuestions}
+                            setCodingQuestions={setCodingQuestions} />
                     );
                 case "quiz":
                     return (
-                        <StudentQuiz/>
+                        <StudentQuiz
+                            lessonID={lessonID}
+                            quizQuestions={quizQuestions}
+                        />
                     );
                 default:
                     return null;
