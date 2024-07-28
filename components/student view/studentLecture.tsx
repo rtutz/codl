@@ -26,6 +26,7 @@ const StudentLecture = ({ lessonMarkdown }: IProps) => {
     const output = eval(code);
     setConsoleOutput(String(output));
   };
+  
   const onChange = useCallback((value: string, viewUpdate: ViewUpdate) => {
     console.log('value:', value);
     setCode(value);

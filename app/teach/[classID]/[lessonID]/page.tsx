@@ -155,7 +155,9 @@ function LessonContent() {
                     );
                 case "coding":
                     return (
-                        <StudentCoding/>
+                        <StudentCoding 
+                            codingQuestions={codingQuestions} 
+                            setCodingQuestions={setCodingQuestions}/>
                     );
                 case "quiz":
                     return (
