@@ -124,7 +124,8 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
         <Tab codingQuestions={codingQuestions} 
               currQuestion={currQuestion} 
               updateCurrQuestionNum={updateCurrQuestionNum} 
-              setCodingQuestions={setCodingQuestions} />
+              setCodingQuestions={setCodingQuestions} 
+              role = 'Student'/>
         <Button className="mx-4 py-4" onClick={saveMarkdown}>
           Save
         </Button>

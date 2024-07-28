@@ -16,9 +16,10 @@ interface IProps {
     currQuestion: ICodingQuestion | undefined,
     updateCurrQuestionNum: (questionNum: ICodingQuestion) => void;
     setCodingQuestions: React.Dispatch<React.SetStateAction<ICodingQuestion[] | undefined>>;
+    role?: 'Teacher' | 'Student';
 }
 
-export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionNum, setCodingQuestions }: IProps) {
+export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionNum, setCodingQuestions, role='Teacher' }: IProps) {
     const [lessonId, setLessonId] = useLessonIdContext();
 
     const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -122,7 +123,7 @@ export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionN
                                 Question #{index + 1}
                             </button>
 
-                            {item.id === currQuestion?.id && (
+                            {item.id === currQuestion?.id && role === 'Teacher' && (
                                 <button
                                     className="ml-2 text-gray-500 hover:text-white text-lg"
                                     onClick={(e) => {
@@ -136,13 +137,13 @@ export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionN
                         </div>
                     ))}
 
-                    <button
+                    {role === 'Teacher' && <button
                         className="px-4 rounded-t-lg transition-colors duration-300 
                 text-gray-300 hover:bg-gray-700 flex-shrink-0"
                         onClick={addNewTab}
                     >
                         +
-                    </button>
+                    </button>}
                 </div>
             </div>
         </>
