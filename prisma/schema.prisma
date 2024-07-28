@@ -21,6 +21,7 @@ model User {
   UserClassMap       UserClassMap[]
   ModelUserCodingMap UserCodingMap[]
   UserLessonMap      UserLessonMap[]
+  userAnswers        userAnswers[]
 }
 
 model UserClassMap {
@@ -64,20 +65,22 @@ model Lesson {
 }
 
 model Quiz {
-  question String
-  lessonId String
-  hint     String?
-  id       Int      @id @default(autoincrement())
-  choices  Choice[]
-  lesson   Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  question    String
+  lessonId    String
+  hint        String?
+  id          Int           @id @default(autoincrement())
+  choices     Choice[]
+  lesson      Lesson        @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  userAnswers userAnswers[]
 }
 
 model Choice {
-  id         Int     @id @default(autoincrement())
-  text       String
-  isCorrect  Boolean
-  questionId Int
-  question   Quiz    @relation(fields: [questionId], references: [id])
+  id          Int           @id @default(autoincrement())
+  text        String
+  isCorrect   Boolean
+  questionId  Int
+  question    Quiz          @relation(fields: [questionId], references: [id])
+  userAnswers userAnswers[]
 }
 
 model CodingQuestion {
@@ -106,6 +109,17 @@ model UserCodingMap {
   user             User           @relation(fields: [userId], references: [id])
 
   @@unique([userId, codingQuestionId])
+}
+
+model userAnswers {
+  userId   String
+  choiceId Int
+  quizId   Int
+  Choice   Choice @relation(fields: [choiceId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  Quiz     Quiz   @relation(fields: [quizId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  User     User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([userId, choiceId, quizId])
 }
 
 model Account {
