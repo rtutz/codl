@@ -1,7 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["relationJoins"]
-
 }
 
 datasource db {
@@ -10,17 +9,18 @@ datasource db {
 }
 
 model User {
-  id            String          @id @default(cuid())
-  email         String          @unique
-  name          String?
-  createdAt     DateTime        @default(now())
-  emailVerified DateTime?
-  image         String?
-  updatedAt     DateTime        @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-  UserClassMap  UserClassMap[]
-  UserLessonMap UserLessonMap[]
+  id                 String               @id @default(cuid())
+  email              String               @unique
+  name               String?
+  createdAt          DateTime             @default(now())
+  emailVerified      DateTime?
+  image              String?
+  updatedAt          DateTime             @updatedAt
+  accounts           Account[]
+  sessions           Session[]
+  UserClassMap       UserClassMap[]
+  UserLessonMap      UserLessonMap[]
+  ModelUserCodingMap ModelUserCodingMap[]
 }
 
 model UserClassMap {
@@ -68,32 +68,43 @@ model Quiz {
   question String
   hint     String?
   choices  Choice[]
-  lessonId      String
-  lesson        Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId String
+  lesson   Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 }
 
 model Choice {
-  id         Int      @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
   text       String
   isCorrect  Boolean
-  question   Quiz @relation(fields: [questionId], references: [id])
+  question   Quiz    @relation(fields: [questionId], references: [id])
   questionId Int
 }
 
 model CodingQuestion {
-  id        String      @id @unique @default(dbgenerated("gen_random_uuid()"))
-  lessonId  String
-  lesson    Lesson      @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  markdown  String
-  TestCases TestCases[]
+  id                 String               @id @unique @default(dbgenerated("gen_random_uuid()"))
+  lessonId           String
+  lesson             Lesson               @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  markdown           String
+  TestCases          TestCases[]
+  ModelUserCodingMap ModelUserCodingMap[]
 }
 
 model TestCases {
-  id        String      @id @unique @default(dbgenerated("gen_random_uuid()"))
-  input          String
-  output         String
-  codingQuestion CodingQuestion @relation(fields: [codingQuestionId], references: [id], onDelete: Cascade)
+  id               String         @id @unique @default(dbgenerated("gen_random_uuid()"))
+  input            String
+  output           String
+  codingQuestion   CodingQuestion @relation(fields: [codingQuestionId], references: [id], onDelete: Cascade)
   codingQuestionId String
+}
+
+model ModelUserCodingMap {
+  id               String         @id @unique @default(dbgenerated("gen_random_uuid()"))
+  userId           String
+  codingQuestionId String
+  user             User           @relation(fields: [userId], references: [id])
+  codingQuestion   CodingQuestion @relation(fields: [codingQuestionId], references: [id])
+
+  @@unique([userId, codingQuestionId])
 }
 
 model Account {
