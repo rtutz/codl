@@ -4,11 +4,12 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import MarkdownPreview from "../markdownPreview";
 import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
 import { EditorView, ViewUpdate } from '@codemirror/view';
+import TerminalWindow from "../terminal";
 
 
 interface IProps {
@@ -19,6 +20,7 @@ interface IProps {
 const StudentLecture = ({ lessonMarkdown }: IProps) => {
   const [code, setCode] = useState('test');
   const [consoleOutput, setConsoleOutput] = useState('Testing');
+  const terminalRef = useRef<HTMLDivElement | null>(null);
 
   const handleRunCode = () => {
     // Implement your code execution logic here
@@ -26,7 +28,7 @@ const StudentLecture = ({ lessonMarkdown }: IProps) => {
     const output = eval(code);
     setConsoleOutput(String(output));
   };
-  
+
   const onChange = useCallback((value: string, viewUpdate: ViewUpdate) => {
     console.log('value:', value);
     setCode(value);
@@ -77,13 +79,14 @@ const StudentLecture = ({ lessonMarkdown }: IProps) => {
             </ResizablePanel>
 
             <ResizableHandle withHandle />
-
             <ResizablePanel defaultSize={40} minSize={20}>
               <div className="h-full flex flex-col">
-                <h2 className="text-2xl font-bold p-4 border-b border-gray-800">Console Output</h2>
-                <pre className="flex-grow p-4 overflow-auto bg-gray-800 rounded-md m-2">
-                  {consoleOutput}
-                </pre>
+                <h2 className="text-2xl font-bold p-4 border-b border-gray-800">
+                  Console Output
+                </h2>
+                <div className="flex-grow overflow-auto rounded-md m-2">
+                  <TerminalWindow terminalData="Test" terminalRef={terminalRef} />
+                </div>
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import AlertUI from "../error";
 import Tab from "../tab"
 import { Button } from "../ui/button"
@@ -15,6 +15,7 @@ import MarkdownPreview from "../markdownPreview";
 import { ViewUpdate } from '@codemirror/view';
 import { useClassRole } from "@/app/context/roleContext";
 import useDebounce from "@/lib/useDebounce";
+import TerminalWindow from "../terminal";
 
 interface ICodingQuestion {
   id: string,
@@ -31,10 +32,11 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>('There was an error saving the file.');
   const [alertStyling, setAlertStyling] = useState<"default" | "destructive" | null | undefined>('destructive');
-  
+
   const [consoleOutput, setConsoleOutput] = useState('Testing');
   const [code, setCode] = useState('test');
   const [currQuestion, setCurrQuestion] = useState<ICodingQuestion>();
+  const terminalRef = useRef<HTMLDivElement | null>(null);
 
   const { userId } = useClassRole();
 
@@ -50,7 +52,7 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
             throw new Error('Network response was not ok');
           }
           const data = await response.json();
-          console.log('backend response',data);
+          console.log('backend response', data);
           setCode(data.value);
         } catch (error) {
           console.error('Failed to fetch data:', error);
@@ -59,15 +61,15 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
 
       fetchData();
     }
-}, [currQuestion])
+  }, [currQuestion])
 
-  
+
   useEffect(() => {
     if (codingQuestions) {
       console.log('first question', codingQuestions[0]);
-        setCurrQuestion(codingQuestions[0]);
+      setCurrQuestion(codingQuestions[0]);
     }
-}, [])
+  }, [])
 
   async function saveMarkdown() {
 
@@ -77,7 +79,7 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
     setCurrQuestion(chosenQuestion);
   }
 
-  
+
   const updateCode = async (value: string) => {
     try {
       const response = await fetch(`/api/codingquestion`, {
@@ -121,11 +123,11 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
         message={alertMessage}
         styling={alertStyling} />}
       <div className="flex mt-4 justify-between">
-        <Tab codingQuestions={codingQuestions} 
-              currQuestion={currQuestion} 
-              updateCurrQuestionNum={updateCurrQuestionNum} 
-              setCodingQuestions={setCodingQuestions} 
-              role = 'Student'/>
+        <Tab codingQuestions={codingQuestions}
+          currQuestion={currQuestion}
+          updateCurrQuestionNum={updateCurrQuestionNum}
+          setCodingQuestions={setCodingQuestions}
+          role='Student' />
         <Button className="mx-4 py-4" onClick={saveMarkdown}>
           Save
         </Button>
@@ -169,9 +171,9 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
             <ResizablePanel defaultSize={40} minSize={20}>
               <div className="h-full flex flex-col">
                 <h2 className="text-2xl font-bold p-4 border-b border-gray-800">Console Output</h2>
-                <pre className="flex-grow p-4 overflow-auto bg-gray-800 rounded-md m-2">
-                  {consoleOutput}
-                </pre>
+                <div className="flex-grow overflow-auto rounded-md m-2">
+                  {currQuestion && <TerminalWindow terminalData={currQuestion?.markdown || ''} terminalRef={terminalRef} />}
+                </div>
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
