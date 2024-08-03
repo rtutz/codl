@@ -86,7 +86,7 @@ function LessonContent() {
     const { markdown, setMarkdown } = useMarkdown();
 
     // For coding
-    const [codingQuestions, setCodingQuestions] = useState<ICodingQuestion[]>();
+    const [codingQuestions, setCodingQuestions] = useState<ICodingQuestion[]>([]);
 
     // For quiz
     const [quizQuestions, setQuizQuestions] = useState<IQuizQuestion[]>([]);

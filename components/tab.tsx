@@ -15,7 +15,7 @@ interface IProps {
     codingQuestions: ICodingQuestion[] | undefined,
     currQuestion: ICodingQuestion | undefined,
     updateCurrQuestionNum: (questionNum: ICodingQuestion) => void;
-    setCodingQuestions: React.Dispatch<React.SetStateAction<ICodingQuestion[] | undefined>>;
+    setCodingQuestions: React.Dispatch<React.SetStateAction<ICodingQuestion[]>>;
     role?: 'Teacher' | 'Student';
 }
 

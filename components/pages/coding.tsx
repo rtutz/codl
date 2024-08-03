@@ -18,7 +18,7 @@ import TestCases from "../testCases"
 interface ICoding {
     lessonID: string;
     codingQuestions: ICodingQuestion[] | undefined;
-    setCodingQuestions: React.Dispatch<React.SetStateAction<ICodingQuestion[] | undefined>>;
+    setCodingQuestions: React.Dispatch<React.SetStateAction<ICodingQuestion[]>>;
 }
 interface ICodingQuestion {
     id: string,

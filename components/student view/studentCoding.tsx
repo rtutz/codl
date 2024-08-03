@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import AlertUI from "../error";
 import Tab from "../tab"
 import { Button } from "../ui/button"
@@ -24,8 +24,8 @@ interface ICodingQuestion {
 }
 
 interface IStudentCoding {
-  codingQuestions: ICodingQuestion[] | undefined;
-  setCodingQuestions: React.Dispatch<React.SetStateAction<ICodingQuestion[] | undefined>>;
+  codingQuestions: ICodingQuestion[];
+  setCodingQuestions: React.Dispatch<React.SetStateAction<ICodingQuestion[]>>;
 }
 
 const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) => {
@@ -36,7 +36,7 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
   const [consoleOutput, setConsoleOutput] = useState('Testing');
   const [code, setCode] = useState('test');
   const [currQuestion, setCurrQuestion] = useState<ICodingQuestion>();
-  const terminalRef = useRef<HTMLDivElement | null>(null);
+  let terminalRef = useRef<HTMLDivElement | null>(null);
 
   const { userId } = useClassRole();
 
@@ -52,7 +52,6 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
             throw new Error('Network response was not ok');
           }
           const data = await response.json();
-          console.log('backend response', data);
           setCode(data.value);
         } catch (error) {
           console.error('Failed to fetch data:', error);
@@ -65,11 +64,11 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
 
 
   useEffect(() => {
-    if (codingQuestions) {
-      console.log('first question', codingQuestions[0]);
+    if (codingQuestions.length > 0) {
       setCurrQuestion(codingQuestions[0]);
     }
-  }, [])
+  }, [codingQuestions]);
+
 
   async function saveMarkdown() {
 
@@ -77,6 +76,8 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
 
   function updateCurrQuestionNum(chosenQuestion: ICodingQuestion) {
     setCurrQuestion(chosenQuestion);
+    terminalRef = useRef<HTMLDivElement | null>(null);
+
   }
 
 
@@ -109,14 +110,12 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
 
 
   const onChange = useCallback((value: string, viewUpdate: ViewUpdate) => {
-    console.log('value:', value);
     setCode(value);
     debouncedUpdateCode(value);
   }, [debouncedUpdateCode]);
 
 
 
-  console.log("codingQuestions", codingQuestions);
   return (
     <>
       {showAlert && <AlertUI
@@ -172,7 +171,12 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
               <div className="h-full flex flex-col">
                 <h2 className="text-2xl font-bold p-4 border-b border-gray-800">Console Output</h2>
                 <div className="flex-grow overflow-auto rounded-md m-2">
-                  {currQuestion && <TerminalWindow terminalData={currQuestion?.markdown || ''} terminalRef={terminalRef} />}
+                    <div>
+                      <TerminalWindow
+                        terminalData={''}
+                        terminalRef={terminalRef}
+                      />
+                    </div>
                 </div>
               </div>
             </ResizablePanel>

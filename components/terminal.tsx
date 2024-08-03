@@ -14,6 +14,7 @@ export default function TerminalWindow({ terminalRef, terminalData }: ITerminalW
     const ws = useRef<WebSocket | null>(null);
     const inputBuffer = useRef<string>('');
 
+
     useEffect(() => {
         if (!terminalRef.current) return;
 
