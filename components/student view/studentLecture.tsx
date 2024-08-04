@@ -18,19 +18,22 @@ interface IProps {
 
 
 const StudentLecture = ({ lessonMarkdown }: IProps) => {
-  const [code, setCode] = useState('test');
+  const [code, setCode] = useState('');
   const [consoleOutput, setConsoleOutput] = useState('Testing');
   const terminalRef = useRef<HTMLDivElement | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+
 
   const handleRunCode = () => {
-    // Implement your code execution logic here
-    // For example:
-    const output = eval(code);
-    setConsoleOutput(String(output));
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({ type: 'python', data: code }));
+    } else {
+      console.error('WebSocket is not connected');
+    }
   };
 
+
   const onChange = useCallback((value: string, viewUpdate: ViewUpdate) => {
-    console.log('value:', value);
     setCode(value);
   }, []);
 
@@ -85,7 +88,7 @@ const StudentLecture = ({ lessonMarkdown }: IProps) => {
                   Console Output
                 </h2>
                 <div className="flex-grow overflow-auto rounded-md m-2">
-                  <TerminalWindow terminalData="Test" terminalRef={terminalRef} key="1"/>
+                  <TerminalWindow pythonCode={code}terminalRef={terminalRef} ws={wsRef}/>
                 </div>
               </div>
             </ResizablePanel>

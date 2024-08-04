@@ -5,17 +5,14 @@ import { useRef, useEffect, RefObject } from 'react';
 import 'xterm/css/xterm.css';
 
 interface ITerminalWindow {
-    terminalData: string;
-    terminalRef: RefObject<HTMLDivElement>;
+    terminalRef: React.RefObject<HTMLDivElement>;
+    pythonCode: string;
+    ws: React.MutableRefObject<WebSocket | null>;
 }
 
-const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, terminalData }) => {
+const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws }) => {
     const term = useRef<Terminal | null>(null);
-    const ws = useRef<WebSocket | null>(null);
     const inputBuffer = useRef<string>('');
-
-    console.log("terminal ref is", terminalRef);
-    console.log("term is", term);
 
     useEffect(() => {
         if (!terminalRef.current) return;
@@ -35,6 +32,8 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, terminalData }
                 const message = JSON.parse(event.data);
                 if (message.type === 'output') {
                     term.current?.write(message.data);
+                } else if (message.type === 'exit') {
+                    term.current?.write(`\r\n${message.data}\r\n`);
                 } else if (message.error) {
                     term.current?.write(`Error: ${message.error}\r\n`);
                 }

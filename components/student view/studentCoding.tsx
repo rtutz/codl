@@ -185,9 +185,9 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
                       <>
                         {console.log(terminalRefMap)}
                         <TerminalWindow
-                          terminalData={''}
+                          pythonCode={''}
                           terminalRef={terminalRefMap.current[currQuestion?.id]}
-                          key={currQuestion.id}
+                          // key={currQuestion.id}
                         />
                       </>)}
                   </div>
