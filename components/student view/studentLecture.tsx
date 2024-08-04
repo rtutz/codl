@@ -21,10 +21,13 @@ const StudentLecture = ({ lessonMarkdown }: IProps) => {
   const [code, setCode] = useState('');
   const terminalRef = useRef<HTMLDivElement | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
+  const [runSignal, setRunSignal] = useState(0);
+
 
 
   const handleRunCode = () => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      setRunSignal(prev => prev + 1);
       wsRef.current.send(JSON.stringify({ type: 'python', data: code }));
     } else {
       console.error('WebSocket is not connected');
@@ -87,7 +90,7 @@ const StudentLecture = ({ lessonMarkdown }: IProps) => {
                   Console Output
                 </h2>
                 <div className="flex-grow overflow-auto rounded-md m-2">
-                  <TerminalWindow pythonCode={code}terminalRef={terminalRef} ws={wsRef}/>
+                  <TerminalWindow pythonCode={code}terminalRef={terminalRef} ws={wsRef} runSignal={runSignal}/>
                 </div>
               </div>
             </ResizablePanel>

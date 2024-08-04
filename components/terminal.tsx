@@ -8,11 +8,18 @@ interface ITerminalWindow {
     terminalRef: React.RefObject<HTMLDivElement>;
     pythonCode: string;
     ws: React.MutableRefObject<WebSocket | null>;
+    runSignal: number;
 }
 
-const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws }) => {
+const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws, runSignal }) => {
     const term = useRef<Terminal | null>(null);
     const inputBuffer = useRef<string>('');
+
+    useEffect(() => {
+        if (term.current) {
+            term.current.clear();
+        }
+    }, [runSignal]);
 
     useEffect(() => {
         if (!terminalRef.current) return;
@@ -66,7 +73,7 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
 
             if (data === '\r') { // Enter key pressed
                 if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-                    ws.current.send(JSON.stringify({ type: 'command', data: inputBuffer.current }));
+                    ws.current.send(JSON.stringify({ type: 'input', data: inputBuffer.current }));
                     inputBuffer.current = ''; // Clear the buffer
                 }
             } else if (data === '\u007F') { // Handle backspace

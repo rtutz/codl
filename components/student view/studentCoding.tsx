@@ -16,6 +16,7 @@ import { ViewUpdate } from '@codemirror/view';
 import { useClassRole } from "@/app/context/roleContext";
 import useDebounce from "@/lib/useDebounce";
 import TerminalWindow from "../terminal";
+import { run } from "node:test";
 
 interface ICodingQuestion {
   id: string,
@@ -41,6 +42,8 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
   const [code, setCode] = useState('');
   const [currQuestion, setCurrQuestion] = useState<ICodingQuestion>();
   const terminalRefMap = useRef<TerminalRefMap>({});
+  const [runSignal, setRunSignal] = useState(0);
+
 
   const { userId } = useClassRole();
 
@@ -125,6 +128,7 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
     if (currQuestion) {
       const wsRef = terminalRefMap.current[currQuestion?.id][1]
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        setRunSignal(prev => prev + 1);
         wsRef.current.send(JSON.stringify({ type: 'python', data: code }));
       } else {
         console.error('WebSocket is not connected');
@@ -197,6 +201,7 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
                           pythonCode={''}
                           terminalRef={terminalRefMap.current[currQuestion?.id][0]}
                           ws={terminalRefMap.current[currQuestion?.id][1]}
+                          runSignal={runSignal}
                           key={currQuestion.id}
                         />
                       </>)}
