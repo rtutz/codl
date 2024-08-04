@@ -9,11 +9,13 @@ interface ITerminalWindow {
     terminalRef: RefObject<HTMLDivElement>;
 }
 
-export default function TerminalWindow({ terminalRef, terminalData }: ITerminalWindow) {
+const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, terminalData }) => {
     const term = useRef<Terminal | null>(null);
     const ws = useRef<WebSocket | null>(null);
     const inputBuffer = useRef<string>('');
 
+    console.log("terminal ref is", terminalRef);
+    console.log("term is", term);
 
     useEffect(() => {
         if (!terminalRef.current) return;
@@ -89,4 +91,6 @@ export default function TerminalWindow({ terminalRef, terminalData }: ITerminalW
         <div ref={terminalRef} style={{ height: '100%', width: '100%' }}>
         </div>
     );
-}
+};
+
+export default TerminalWindow;

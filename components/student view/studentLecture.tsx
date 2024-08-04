@@ -85,7 +85,7 @@ const StudentLecture = ({ lessonMarkdown }: IProps) => {
                   Console Output
                 </h2>
                 <div className="flex-grow overflow-auto rounded-md m-2">
-                  <TerminalWindow terminalData="Test" terminalRef={terminalRef} />
+                  <TerminalWindow terminalData="Test" terminalRef={terminalRef} key="1"/>
                 </div>
               </div>
             </ResizablePanel>

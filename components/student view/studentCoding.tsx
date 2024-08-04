@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef, createRef } from "react";
 import AlertUI from "../error";
 import Tab from "../tab"
 import { Button } from "../ui/button"
@@ -28,6 +28,10 @@ interface IStudentCoding {
   setCodingQuestions: React.Dispatch<React.SetStateAction<ICodingQuestion[]>>;
 }
 
+type TerminalRefMap = {
+  [key: string]: React.RefObject<HTMLDivElement>;
+};
+
 const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) => {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>('There was an error saving the file.');
@@ -36,7 +40,8 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
   const [consoleOutput, setConsoleOutput] = useState('Testing');
   const [code, setCode] = useState('test');
   const [currQuestion, setCurrQuestion] = useState<ICodingQuestion>();
-  let terminalRef = useRef<HTMLDivElement | null>(null);
+  const terminalRef = useRef<HTMLDivElement | null>(null);
+  const terminalRefMap = useRef<TerminalRefMap>({});
 
   const { userId } = useClassRole();
 
@@ -67,8 +72,14 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
     if (codingQuestions.length > 0) {
       setCurrQuestion(codingQuestions[0]);
     }
-  }, [codingQuestions]);
 
+    // Initialize refs for each question
+    codingQuestions.forEach((question) => {
+      if (!terminalRefMap.current[question.id]) {
+        terminalRefMap.current[question.id] = createRef<HTMLDivElement>();
+      }
+    });
+  }, [codingQuestions]);
 
   async function saveMarkdown() {
 
@@ -76,8 +87,6 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
 
   function updateCurrQuestionNum(chosenQuestion: ICodingQuestion) {
     setCurrQuestion(chosenQuestion);
-    terminalRef = useRef<HTMLDivElement | null>(null);
-
   }
 
 
@@ -171,12 +180,17 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
               <div className="h-full flex flex-col">
                 <h2 className="text-2xl font-bold p-4 border-b border-gray-800">Console Output</h2>
                 <div className="flex-grow overflow-auto rounded-md m-2">
-                    <div>
-                      <TerminalWindow
-                        terminalData={''}
-                        terminalRef={terminalRef}
-                      />
-                    </div>
+                  <div>
+                    {currQuestion && (
+                      <>
+                        {console.log(terminalRefMap)}
+                        <TerminalWindow
+                          terminalData={''}
+                          terminalRef={terminalRefMap.current[currQuestion?.id]}
+                          key={currQuestion.id}
+                        />
+                      </>)}
+                  </div>
                 </div>
               </div>
             </ResizablePanel>
