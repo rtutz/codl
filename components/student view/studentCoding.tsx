@@ -29,7 +29,7 @@ interface IStudentCoding {
 }
 
 type TerminalRefMap = {
-  [key: string]: React.RefObject<HTMLDivElement>;
+  [key: string]: [React.RefObject<HTMLDivElement>, React.MutableRefObject<WebSocket | null>];
 };
 
 const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) => {
@@ -38,9 +38,8 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
   const [alertStyling, setAlertStyling] = useState<"default" | "destructive" | null | undefined>('destructive');
 
   const [consoleOutput, setConsoleOutput] = useState('Testing');
-  const [code, setCode] = useState('test');
+  const [code, setCode] = useState('');
   const [currQuestion, setCurrQuestion] = useState<ICodingQuestion>();
-  const terminalRef = useRef<HTMLDivElement | null>(null);
   const terminalRefMap = useRef<TerminalRefMap>({});
 
   const { userId } = useClassRole();
@@ -76,7 +75,7 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
     // Initialize refs for each question
     codingQuestions.forEach((question) => {
       if (!terminalRefMap.current[question.id]) {
-        terminalRefMap.current[question.id] = createRef<HTMLDivElement>();
+        terminalRefMap.current[question.id] = [createRef<HTMLDivElement>(), { current: null }];
       }
     });
   }, [codingQuestions]);
@@ -109,7 +108,6 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
       }
 
       const data = await response.json();
-      console.log('Updated code:', data);
     } catch (error) {
       console.error('Failed to update code:', error);
     }
@@ -122,6 +120,17 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
     setCode(value);
     debouncedUpdateCode(value);
   }, [debouncedUpdateCode]);
+
+  const handleRunCode = () => {
+    if (currQuestion) {
+      const wsRef = terminalRefMap.current[currQuestion?.id][1]
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify({ type: 'python', data: code }));
+      } else {
+        console.error('WebSocket is not connected');
+      }
+    }
+  }
 
 
 
@@ -136,8 +145,8 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
           updateCurrQuestionNum={updateCurrQuestionNum}
           setCodingQuestions={setCodingQuestions}
           role='Student' />
-        <Button className="mx-4 py-4" onClick={saveMarkdown}>
-          Save
+        <Button className="mx-4 py-4" onClick={handleRunCode}>
+          Run Code
         </Button>
       </div>
 
@@ -183,11 +192,12 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
                   <div>
                     {currQuestion && (
                       <>
-                        {console.log(terminalRefMap)}
+                        {console.log(code)}
                         <TerminalWindow
                           pythonCode={''}
-                          terminalRef={terminalRefMap.current[currQuestion?.id]}
-                          // key={currQuestion.id}
+                          terminalRef={terminalRefMap.current[currQuestion?.id][0]}
+                          ws={terminalRefMap.current[currQuestion?.id][1]}
+                          key={currQuestion.id}
                         />
                       </>)}
                   </div>

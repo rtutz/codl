@@ -19,7 +19,6 @@ interface IProps {
 
 const StudentLecture = ({ lessonMarkdown }: IProps) => {
   const [code, setCode] = useState('');
-  const [consoleOutput, setConsoleOutput] = useState('Testing');
   const terminalRef = useRef<HTMLDivElement | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
 
