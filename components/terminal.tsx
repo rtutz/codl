@@ -69,9 +69,7 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
 
     const handleInput = (data: string) => {
         if (term.current) {
-            term.current.write(data); // Echo the input to the terminal
-
-            if (data === '\r') { // Enter key pressed
+            if (data === '\r') { 
                 if (ws.current && ws.current.readyState === WebSocket.OPEN) {
                     ws.current.send(JSON.stringify({ type: 'input', data: inputBuffer.current }));
                     inputBuffer.current = ''; // Clear the buffer
