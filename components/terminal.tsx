@@ -13,7 +13,7 @@ interface ITerminalWindow {
 
 const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws, runSignal }) => {
     const term = useRef<Terminal | null>(null);
-    const inputBuffer = useRef<string>('');
+    const inputBufferRef = useRef<string>('');
 
     useEffect(() => {
         if (term.current) {
@@ -37,6 +37,7 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
 
             ws.current.onmessage = (event) => {
                 const message = JSON.parse(event.data);
+                console.log("message from ws", message);
                 if (message.type === 'output') {
                     term.current?.write(message.data);
                 } else if (message.type === 'exit') {
@@ -68,19 +69,20 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
     }, [terminalRef]);
 
     const handleInput = (data: string) => {
-        if (term.current) {
-            if (data === '\r') { 
-                if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-                    ws.current.send(JSON.stringify({ type: 'input', data: inputBuffer.current }));
-                    inputBuffer.current = ''; // Clear the buffer
-                }
-            } else if (data === '\u007F') { // Handle backspace
-                if (inputBuffer.current.length > 0) {
-                    inputBuffer.current = inputBuffer.current.slice(0, -1);
-                    term.current.write('\b \b'); // Erase the last character from the terminal
+        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+            if (data === '\r') { // Enter key pressed
+                ws.current.send(JSON.stringify({ type: 'input', data: inputBufferRef.current }));
+                inputBufferRef.current = ''; // Clear the buffer
+            } else if (data === '\u007F') { // Backspace
+                if (inputBufferRef.current.length > 0) {
+                    inputBufferRef.current = inputBufferRef.current.slice(0, -1);
+                    ws.current.send(JSON.stringify({ type: 'backspace' }));
                 }
             } else {
-                inputBuffer.current += data; // Append data to buffer
+                inputBufferRef.current += data;
+                if (term.current) {
+                    term.current.write(data); // Echo the input to the terminal
+                }
             }
         }
     };
