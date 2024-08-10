@@ -214,7 +214,7 @@ function LessonContent() {
             {/* Side Nav */}
             <SideNav updateCurrentView={updateView} />
 
-            <div className="flex-grow min-h-screen">
+            <div className="flex-grow">
                 {renderContent()}
             </div>
         </div>

@@ -37,7 +37,6 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
 
             ws.current.onmessage = (event) => {
                 const message = JSON.parse(event.data);
-                console.log("message from ws", message);
                 if (message.type === 'output') {
                     term.current?.write(message.data);
                 } else if (message.type === 'exit') {
@@ -72,21 +71,28 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
         if (ws.current && ws.current.readyState === WebSocket.OPEN) {
             if (data === '\r') { // Enter key pressed
                 ws.current.send(JSON.stringify({ type: 'input', data: inputBufferRef.current }));
-                inputBufferRef.current = ''; // Clear the buffer
+                inputBufferRef.current = '';
+                if (term.current) {
+                    term.current.write('\r\n'); // Move to a new line in the terminal
+                }
             } else if (data === '\u007F') { // Backspace
                 if (inputBufferRef.current.length > 0) {
                     inputBufferRef.current = inputBufferRef.current.slice(0, -1);
-                    ws.current.send(JSON.stringify({ type: 'backspace' }));
+                    console.log("Input buffer is", inputBufferRef.current);
+
+                    if (term.current) {
+                        // Move the cursor back, overwrite with a space, and move back again
+                        term.current.write('\b \b');
+                    }
                 }
             } else {
                 inputBufferRef.current += data;
                 if (term.current) {
-                    term.current.write(data); // Echo the input to the terminal
+                    term.current.write(data); // Echo the new character to the terminal
                 }
             }
         }
     };
-
     useEffect(() => {
         if (term.current) {
             term.current.onData(handleInput);

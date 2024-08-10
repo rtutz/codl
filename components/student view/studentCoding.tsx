@@ -139,39 +139,44 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
 
 
   return (
-    <>
-      {showAlert && <AlertUI
-        message={alertMessage}
-        styling={alertStyling} />}
+    <div className="flex-grow h-screen overflow-hidden">
+      {showAlert && (
+        <AlertUI message={alertMessage} styling={alertStyling} />
+      )}
       <div className="flex mt-4 justify-between">
-        <Tab codingQuestions={codingQuestions}
+        <Tab
+          codingQuestions={codingQuestions}
           currQuestion={currQuestion}
           updateCurrQuestionNum={updateCurrQuestionNum}
           setCodingQuestions={setCodingQuestions}
-          role='Student' />
+          role="Student"
+        />
         <Button className="mx-4 py-4" onClick={handleRunCode}>
           Run Code
         </Button>
       </div>
 
-      <ResizablePanelGroup direction="horizontal" className="flex-grow">
-        <ResizablePanel defaultSize={50} minSize={30}>
+      <ResizablePanelGroup direction="horizontal" className="flex h-full">
+        <ResizablePanel defaultSize={50} minSize={30} className="h-full">
           <div className="h-full flex flex-col">
-            <h2 className="text-2xl font-bold p-4 border-b border-gray-800">Lesson</h2>
+            <h2 className="text-2xl font-bold p-4 border-b border-gray-800">
+              Lesson
+            </h2>
             <div className="flex-grow overflow-auto p-4">
               <MarkdownPreview markdownContent={currQuestion?.markdown || ''} />
-              <p>Some content here</p>
             </div>
           </div>
         </ResizablePanel>
 
         <ResizableHandle withHandle />
 
-        <ResizablePanel defaultSize={50} minSize={30}>
-          <ResizablePanelGroup direction="vertical">
-            <ResizablePanel defaultSize={60} minSize={30}>
+        <ResizablePanel defaultSize={50} minSize={30} className="h-full">
+          <ResizablePanelGroup direction="vertical" className="h-full">
+            <ResizablePanel defaultSize={60} minSize={30} className="h-full">
               <div className="h-full flex flex-col">
-                <h2 className="text-2xl font-bold p-4 border-b border-[#282C34]">Code Editor</h2>
+                <h2 className="text-2xl font-bold p-4 border-b border-[#282C34]">
+                  Code Editor
+                </h2>
                 <div className="flex-grow p-4 overflow-hidden bg-[#282C34]">
                   <div className="h-full overflow-auto bg-[#282C34]">
                     <CodeMirror
@@ -189,9 +194,11 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
 
             <ResizableHandle withHandle />
 
-            <ResizablePanel defaultSize={40} minSize={20}>
+            <ResizablePanel defaultSize={40} minSize={20} className="h-full">
               <div className="h-full flex flex-col">
-                <h2 className="text-2xl font-bold p-4 border-b border-gray-800">Console Output</h2>
+                <h2 className="text-2xl font-bold p-4 border-b border-gray-800">
+                  Console Output
+                </h2>
                 <div className="flex-grow overflow-auto rounded-md m-2">
                   <div>
                     {currQuestion && (
@@ -204,7 +211,8 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
                           runSignal={runSignal}
                           key={currQuestion.id}
                         />
-                      </>)}
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -212,7 +220,7 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
           </ResizablePanelGroup>
         </ResizablePanel>
       </ResizablePanelGroup>
-    </>
+    </div>
   );
 };
 
