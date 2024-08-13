@@ -2,11 +2,11 @@
 
 import { useLessonIdContext } from "@/app/context/lessonContext"
 import IndividualQuiz from "../individualQuiz";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "@radix-ui/react-icons"
 import { FaSave } from "react-icons/fa";
-
+import { useToast } from "@/components/ui/use-toast";
 
 interface IQuizQuestion {
     id?: number;
@@ -24,8 +24,8 @@ interface Props {
 
 export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: Props) {
     // const [lessonId, setLessonId] = useLessonIdContext();
-    console.log(quizQuestions);
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(quizQuestions.length === 0 ? -1 : 0);
+    const { toast } = useToast()
 
     const handleNextQuestion = () => {
         if (currentQuestionIndex === quizQuestions.length - 1) {
@@ -60,14 +60,26 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
                     'Content-Type': 'application/json',
                 },
                 cache: 'no-store',
-                body: JSON.stringify({questions: quizQuestions})
+                body: JSON.stringify({ questions: quizQuestions })
             });
 
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
+
+            toast({
+                title: "Success",
+                description: "Questions successfully saved.",
+                duration: 3000,
+            });
         } catch (error) {
             console.error('Error:', error);
+            toast({
+                title: "Error",
+                description: "Failed to save questions. Please try again.",
+                variant: "destructive",
+                duration: 3000,
+            });
             return null;
         }
     }
@@ -79,6 +91,7 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
                     <Button
                         onClick={handleSaveQuestions}
                         variant="default"
+                        disabled={quizQuestions.length === 0 || !quizQuestions.some(q => q.modified)}
                     >
                         <FaSave className="mr-2 h-4 w-4" /> Save Questions
                     </Button>
