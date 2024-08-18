@@ -34,7 +34,7 @@ export default function Lecture({ lectureContent, lessonID, markdown, setMarkdow
     }, [showAlert]);
 
     async function saveMarkdown() {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson?lesson_id=${lessonID}`, {
+        const response = await fetch(`/api/lesson?lesson_id=${lessonID}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

@@ -49,7 +49,7 @@ async function getLessons(class_id: string | undefined, role: string | undefined
             throw new Error('class_id is required');
         }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson?class_id=${class_id}&role=${role}`, {
+        const response = await fetch(`/api/lesson?class_id=${class_id}&role=${role}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ async function getClassInfo(class_id: string | undefined) {
             throw new Error('class_id is required');
         }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/class?class_id=${class_id}`, {
+        const response = await fetch(`/api/class?class_id=${class_id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -140,7 +140,7 @@ function ClassHome() {
     }, [])
 
     async function submitNewLesson() {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson`, {
+        const response = await fetch(`/api/lesson`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ function ClassHome() {
             lesson.id === id ? { ...lesson, published: checked } : lesson
         );
 
-        const responseDB = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson?lesson_id=${id}`, {
+        const responseDB = await fetch(`/api/lesson?lesson_id=${id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

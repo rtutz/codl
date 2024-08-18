@@ -18,7 +18,7 @@ export default function DisplayClasses({ classID, name, deleteEntireClass, userI
     // const [setClassID, setRole] = useClassRole()
 
     async function deleteClass() {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/class`, {
+        const response = await fetch(`/api/class`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

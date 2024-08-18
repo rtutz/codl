@@ -41,7 +41,7 @@ interface ClassData {
 
 async function getClasses(user_id: string) {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/class?user_id=${user_id}`, {
+        const response = await fetch(`/api/class?user_id=${user_id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ export default function LoggedInHome() {
     }, [showAlert]);
 
     async function submitNewClass() {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/class`, {
+        const response = await fetch(`/api/class`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -120,7 +120,7 @@ export default function LoggedInHome() {
     }
 
     async function submitJoinClass() {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/class`, {
+        const response = await fetch(`/api/class`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

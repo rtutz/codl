@@ -33,7 +33,7 @@ export default function TestCases({ codingQuestionId }: ITestCasesProp) {
     useEffect(() => {
         async function getData() {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tests?id=${codingQuestionId}`, {
+                const response = await fetch(`/api/tests?id=${codingQuestionId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

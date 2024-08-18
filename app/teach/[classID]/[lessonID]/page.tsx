@@ -46,7 +46,7 @@ async function getLesson(lesson_id: string | undefined) {
             throw new Error('lesson_id is required');
         }
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/lesson?lesson_id=${lesson_id}`, {
+        const response = await fetch(`/api/lesson?lesson_id=${lesson_id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -104,7 +104,7 @@ function LessonContent() {
 
         async function getCodingQuestions() {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/codingquestion?lesson_id=${lessonID}`, {
+                const response = await fetch(`/api/codingquestion?lesson_id=${lessonID}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -121,7 +121,7 @@ function LessonContent() {
 
         async function getQuiz() {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/quiz?lesson_id=${lessonID}`, {
+                const response = await fetch(`/api/quiz?lesson_id=${lessonID}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

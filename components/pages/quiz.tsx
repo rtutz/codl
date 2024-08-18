@@ -53,7 +53,7 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
 
     const handleSaveQuestions = async () => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/quiz?lesson_id=${lessonID}`, {
+            const response = await fetch(`/api/quiz?lesson_id=${lessonID}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
