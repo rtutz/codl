@@ -48,7 +48,6 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
         const newQuizQuestions = [...quizQuestions];
         newQuizQuestions[currentQuestionIndex] = updatedQuestion;
         newQuizQuestions[currentQuestionIndex].modified = true;
-        console.log(newQuizQuestions);
         setQuizQuestions(newQuizQuestions);
     };
 
@@ -67,11 +66,17 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
                 throw new Error('Failed to fetch data');
             }
 
+            setQuizQuestions(quizQuestions.map(quizQuestion => ({
+                ...quizQuestion,
+                modified: false
+            })))
+
             toast({
                 title: "Success",
                 description: "Questions successfully saved.",
                 duration: 3000,
             });
+
         } catch (error) {
             console.error('Error:', error);
             toast({
