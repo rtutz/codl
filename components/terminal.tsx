@@ -29,7 +29,7 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
             term.current.open(terminalRef.current);
 
             // Initialize WebSocket connection
-            ws.current = new WebSocket('ws://localhost:8080');
+            ws.current = new WebSocket(process.env.NEXT_PUBLIC_WEBSOCKET_URL as string);
 
             ws.current.onopen = () => {
                 console.log('Connected to WebSocket server');

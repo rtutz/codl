@@ -173,7 +173,7 @@ export default function LoggedInHome() {
 
                 <div className="w-1/2">
                     <div className="flex justify-between items-center mb-4">
-                        <h1 className="font-semibold text-2xl">Classes I'm Teaching</h1>
+                        <h1 className="font-semibold text-2xl">Instructed Classes</h1>
 
                         <NewClassBtn newClassName={newClassName} setNewClassName={setNewClassName} submitNewClass={submitNewClass} />
 
@@ -184,13 +184,13 @@ export default function LoggedInHome() {
                             {/* Would be the individual class */}
                             {teacherClasses.map((item, i) => (
                                 <Link href={`/teach/${item.id}`} key={`teacher-${i}`} onClick={() => handleClassClick(item.id, 'TEACHER')}>
-                                        <DisplayClasses
-                                            classID={item.id}
-                                            name={item.name}
-                                            deleteEntireClass={true}
-                                            userID={session?.user?.id}
-                                            updateDisplayedClasses={updateDisplayedClasses}
-                                        />
+                                    <DisplayClasses
+                                        classID={item.id}
+                                        name={item.name}
+                                        deleteEntireClass={true}
+                                        userID={session?.user?.id}
+                                        updateDisplayedClasses={updateDisplayedClasses}
+                                    />
                                 </Link>
                             ))}
                         </CardContent>
@@ -199,7 +199,7 @@ export default function LoggedInHome() {
 
                 <div className="w-1/2 mt-20">
                     <div className="flex justify-between items-center mb-4">
-                        <h1 className="font-semibold text-2xl">Classes I'm Enrolled In</h1>
+                        <h1 className="font-semibold text-2xl">Enrolled Classes</h1>
                         <JoinClassBtn classID={classID} setClassID={setClassID} submitJoinClass={submitJoinClass} />
                     </div>
                     <Card className="p-5">
@@ -207,13 +207,13 @@ export default function LoggedInHome() {
                             {/* Would be the individual class */}
                             {studentClasses.map((item, i) => (
                                 <Link href={`/teach/${item.id}`} key={`student-${i}`} onClick={() => handleClassClick(item.id, 'STUDENT')}>
-                                        <DisplayClasses
-                                            classID={item.id}
-                                            name={item.name}
-                                            deleteEntireClass={false}
-                                            userID={session?.user?.id}
-                                            updateDisplayedClasses={updateDisplayedClasses}
-                                        />
+                                    <DisplayClasses
+                                        classID={item.id}
+                                        name={item.name}
+                                        deleteEntireClass={false}
+                                        userID={session?.user?.id}
+                                        updateDisplayedClasses={updateDisplayedClasses}
+                                    />
                                 </Link>
                             ))}
                         </CardContent>
