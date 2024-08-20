@@ -11,131 +11,114 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    if (req.method === 'GET') {
-        try {
-            const lessonID = req.query.lesson_id ? (req.query.lesson_id as string) : undefined;
-
-            const userId = req.query.userId as string;
-            const questionId = req.query.questionId as string;
-
-            if (lessonID) {
-                const response = await client.codingQuestion.findMany({
-                    where: {
-                        lessonId: lessonID
-                    },
-                    orderBy: {
-                        id: 'asc'
-                    }
-                })
-
-                if (!response) {
-                    return res.status(404).json({ error: 'Data not found' });
-                }
-
-                return res.status(200).json(response)
-            } else if (userId && questionId) {
-                let response = await client.userCodingMap.findUnique({
-                    where: {
-                        userId_codingQuestionId: {
-                            userId: userId,
-                            codingQuestionId: questionId,
-                        },
-                    },
-                });
-
-
-
-                if (!response) {
-                    // Create a new entry if it doesn't exist
-                    response = await client.userCodingMap.create({
-                        data: {
-                            userId: userId,
-                            codingQuestionId: questionId,
-                            value: '' // Initialize with an empty string
-                        }
-                    });
-                }
-                return res.status(200).json(response);
-            }
-
-            return res.status(500).json("Invalid endpoint.");
-
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json(error);
-        }
-    } else if (req.method === 'PATCH') {
-        try {
-            const codingquestionID = req.query.id ? (req.query.id as string) : undefined;
-            const markdownData = req.body?.markdown;
-
-            const { userId, questionId, value } = req.body as { userId: string; questionId: string; value: string };
-
-            if (codingquestionID) {
-                const response = await client.codingQuestion.update({
-                    where: {
-                        id: codingquestionID
-                    },
-                    data: {
-                        markdown: markdownData
-                    }
-                })
-
-                return res.status(200).json(response)
-            } if (userId && questionId && value) {
-                const response = await client.userCodingMap.update({
-                    where: {
-                        userId_codingQuestionId: {
-                            userId: userId,
-                            codingQuestionId: questionId,
-                        },
-                    },
-                    data: {
-                        value: value
-                    }
-                });
-    
-                return res.status(200).json(response);
-            }
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json(error);
-        }
-    } else if (req.method === 'POST') {
-        try {
-            const lessonID = req.body?.lessonId;
-
-            if (lessonID) {
-                const response = await client.codingQuestion.create({
-                    data: {
-                        lessonId: lessonID,
-                        markdown: ''
-                    }
-                })
-
-                return res.status(200).json(response)
-            }
-
-
-        } catch (error) {
-            console.error(error);
-            return res.status(500).json(error);
-        }
-    } else if (req.method === 'DELETE') {
-        const codingquestionID = req.query.id ? (req.query.id as string) : undefined;
-
-        if (codingquestionID) {
-            const response = await client.codingQuestion.delete({
-                where: {
-                    id: codingquestionID
-                }
-            })
-            return res.status(200).json(response)
-        }
-    }
-
-    else {
-        res.status(405).json({ message: 'Method not allowed' });
+    switch (req.method) {
+        case 'GET':
+            return handleGet(req, res);
+        case 'PATCH':
+            return handlePatch(req, res);
+        case 'POST':
+            return handlePost(req, res);
+        case 'DELETE':
+            return handleDelete(req, res);
+        default:
+            return res.status(405).json({ message: 'Method not allowed' });
     }
 }
 
+async function handleGet(req: NextApiRequest, res: NextApiResponse) {
+    try {
+        const lessonId = req.query.lesson_id as string | undefined;
+        const userId = req.query.userId as string;
+        const questionId = req.query.questionId as string;
+
+        if (lessonId) {
+            const response = await client.codingQuestion.findMany({
+                where: { lessonId },
+                orderBy: { id: 'asc' }
+            });
+            return res.status(200).json(response);
+        } else if (userId && questionId) {
+            let response = await client.userCodingMap.findUnique({
+                where: {
+                    userId_codingQuestionId: { userId, codingQuestionId: questionId },
+                },
+            });
+
+            if (!response) {
+                response = await client.userCodingMap.create({
+                    data: { userId, codingQuestionId: questionId, value: '' }
+                });
+            }
+            return res.status(200).json(response);
+        } else {
+            return res.status(400).json({ message: 'Missing required parameters' });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', error });
+    }
+}
+
+async function handlePatch(req: NextApiRequest, res: NextApiResponse) {
+    try {
+        const codingQuestionId = req.query.id as string | undefined;
+        const { userId, questionId, value, markdown } = req.body;
+
+        if (codingQuestionId && markdown !== undefined) {
+            const response = await client.codingQuestion.update({
+                where: { id: codingQuestionId },
+                data: { markdown }
+            });
+            return res.status(200).json(response);
+        } else if (userId && questionId && value !== undefined) {
+            const response = await client.userCodingMap.update({
+                where: {
+                    userId_codingQuestionId: { userId, codingQuestionId: questionId },
+                },
+                data: { value }
+            });
+            return res.status(200).json(response);
+        } else {
+            return res.status(400).json({ message: 'Missing required parameters' });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', error });
+    }
+}
+
+async function handlePost(req: NextApiRequest, res: NextApiResponse) {
+    try {
+        const { lessonId } = req.body;
+
+        if (!lessonId) {
+            return res.status(400).json({ message: 'Missing lessonId' });
+        }
+
+        const response = await client.codingQuestion.create({
+            data: { lessonId, markdown: '' }
+        });
+        return res.status(201).json(response);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', error });
+    }
+}
+
+async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
+    try {
+        const codingQuestionId = req.query.id as string | undefined;
+
+        if (!codingQuestionId) {
+            return res.status(400).json({ message: 'Missing id parameter' });
+        }
+
+        const response = await client.codingQuestion.delete({
+            where: { id: codingQuestionId }
+        });
+        return res.status(200).json(response);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error', error });
+    }
+}
