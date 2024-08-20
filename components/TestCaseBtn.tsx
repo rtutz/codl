@@ -19,9 +19,10 @@ interface TestCaseProps {
   givenOutput: string;
   message: string;
   handleSubmit: (id: string, input: string, output: string) => void;
+  variant?: "default" | "outline"; 
 }
 
-const TestCaseBtn = ({ id, givenInput, givenOutput, handleSubmit, message }: TestCaseProps) => {
+const TestCaseBtn = ({ id, givenInput, givenOutput, handleSubmit, message, variant }: TestCaseProps) => {
   const [input, setInput] = useState<string>(givenInput);
   const [output, setOutput] = useState<string>(givenOutput);
   const [open, setOpen] = useState(false);
@@ -30,7 +31,7 @@ const TestCaseBtn = ({ id, givenInput, givenOutput, handleSubmit, message }: Tes
     <div>
         <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>{message}</Button>
+        <Button  variant={variant}>{message}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -52,7 +53,7 @@ const TestCaseBtn = ({ id, givenInput, givenOutput, handleSubmit, message }: Tes
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit" onClick={() => {handleSubmit(id, input, output); setOpen(false)}}>Save changes</Button>
+          <Button type="submit" onClick={() => {handleSubmit(id, input, output); setOpen(false); setInput(''); setOutput('')}}>Save changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -60,34 +61,4 @@ const TestCaseBtn = ({ id, givenInput, givenOutput, handleSubmit, message }: Tes
   )
 }
 
-export default TestCaseBtn
-
-{/* <Dialog>
-<DialogContent>
-    <DialogTrigger asChild>
-        <Button>{message}</Button>
-    </DialogTrigger>
-  <DialogHeader>
-    <DialogTitle>{message}</DialogTitle>
-  </DialogHeader>
-  <div className="grid gap-4 py-4">
-    <div className="grid grid-cols-4 items-center gap-4">
-      <Label htmlFor="input" className="text-right">
-        Input
-      </Label>
-      <Input id="input" value={input} className="col-span-3" onChange={(e) => setInput(e.target.value)} />
-    </div>
-    <div className="grid grid-cols-4 items-center gap-4">
-      <Label htmlFor="output" className="text-right">
-        Output
-      </Label>
-      <Input id="output" value={output} className="col-span-3" onChange={(e) => setOutput(e.target.value)} />
-    </div>
-  </div>
-  <DialogFooter>
-    <Button type="submit" onClick={() => handleSubmit(id, input, output)}>
-      Save
-    </Button>
-  </DialogFooter>
-</DialogContent>
-</Dialog> */}
+export default TestCaseBtn;
