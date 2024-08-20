@@ -24,6 +24,14 @@ interface ICodingQuestion {
   markdown: string
 }
 
+interface ITestCases {
+  id: string,
+  input: string,
+  output: string,
+  codingQuestionId: string
+}
+
+
 interface IStudentCoding {
   codingQuestions: ICodingQuestion[];
   setCodingQuestions: React.Dispatch<React.SetStateAction<ICodingQuestion[]>>;
@@ -38,11 +46,11 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
   const [alertMessage, setAlertMessage] = useState<string>('There was an error saving the file.');
   const [alertStyling, setAlertStyling] = useState<"default" | "destructive" | null | undefined>('destructive');
 
-  const [consoleOutput, setConsoleOutput] = useState('Testing');
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState<string>('');
   const [currQuestion, setCurrQuestion] = useState<ICodingQuestion>();
   const terminalRefMap = useRef<TerminalRefMap>({});
   const [runSignal, setRunSignal] = useState(0);
+  const [testCases, setTestCases] = useState<ITestCases[]>();
 
 
   const { userId } = useClassRole();
@@ -69,6 +77,32 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
     }
   }, [currQuestion])
 
+  useEffect(() => {
+    async function getData() {
+      if (currQuestion) {
+        try {
+          const response = await fetch(`/api/tests?id=${currQuestion.id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            cache: 'no-store',
+          });
+
+          const data = await response.json();
+          console.log("Test cases are", data);
+          setTestCases(data);
+
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      }
+    }
+
+    getData();
+
+  }, [currQuestion])
+
 
   useEffect(() => {
     if (codingQuestions.length > 0) {
@@ -83,9 +117,7 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
     });
   }, [codingQuestions]);
 
-  async function saveMarkdown() {
 
-  }
 
   function updateCurrQuestionNum(chosenQuestion: ICodingQuestion) {
     setCurrQuestion(chosenQuestion);
@@ -136,6 +168,20 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
     }
   }
 
+  const handleRunTests = () => {
+    if (currQuestion && testCases) {
+      const wsRef = terminalRefMap.current[currQuestion.id][1];
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        setRunSignal(prev => prev + 1);
+        wsRef.current.send(JSON.stringify({ 
+          type: 'runTests', 
+          data: { code, testCases }
+        }));
+      } else {
+        console.error('WebSocket is not connected');
+      }
+    }
+  };
 
 
   return (
@@ -151,9 +197,14 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
           setCodingQuestions={setCodingQuestions}
           role="Student"
         />
-        <Button className="mx-4 py-4" onClick={handleRunCode}>
-          Run Code
-        </Button>
+        <div>
+          <Button className="mx-4 py-4" onClick={handleRunCode}>
+            Run Code
+          </Button>
+          <Button className="mx-4 py-4" variant='secondary' onClick={handleRunTests}>
+            Run Tests
+          </Button>
+        </div>
       </div>
 
       <ResizablePanelGroup direction="horizontal" className="flex h-full">

@@ -25,7 +25,11 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
         if (!terminalRef.current) return;
 
         if (!term.current) {
-            term.current = new Terminal();
+            term.current = new Terminal({
+                cursorBlink: true,
+                fontSize: 14,
+                fontFamily: 'Consolas, monospace',
+            });
             term.current.open(terminalRef.current);
 
             // Initialize WebSocket connection
@@ -37,12 +41,20 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
 
             ws.current.onmessage = (event) => {
                 const message = JSON.parse(event.data);
-                if (message.type === 'output') {
-                    term.current?.write(message.data);
-                } else if (message.type === 'exit') {
-                    term.current?.write(`\r\n${message.data}\r\n`);
-                } else if (message.error) {
-                    term.current?.write(`Error: ${message.error}\r\n`);
+                switch (message.type) {
+                    case 'output':
+                        term.current?.write(message.data);
+                        break;
+                    case 'exit':
+                        term.current?.write(`\r\n${message.data}\r\n`);
+                        break;
+                    case 'testResults':
+                        displayTestResults(message.data);
+                        break;
+                    default:
+                        if (message.error) {
+                            term.current?.write(`\r\nError: ${message.error}\r\n`);
+                        }
                 }
             };
 
@@ -52,6 +64,22 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
 
             ws.current.onerror = (error) => {
                 console.error('WebSocket error:', error);
+            };
+
+            // Function to display test results
+            const displayTestResults = (results: any[]) => {
+                term.current?.write('\r\n\x1b[1;33m========== Test Results ==========\x1b[0m\r\n');
+                results.forEach((result, index) => {
+                    const status = result.passed ? '\x1b[32mPASSED\x1b[0m' : '\x1b[31mFAILED\x1b[0m';
+                    term.current?.write(`\r\nTest Case ${index + 1}: ${status}\r\n`);
+                    term.current?.write(`Input: ${result.input}\r\n`);
+                    term.current?.write(`Expected Output: ${result.expectedOutput}\r\n`);
+                    term.current?.write(`Actual Output: ${result.actualOutput}\r\n`);
+                    if (!result.passed) {
+                        term.current?.write(`\x1b[31mMismatch between expected and actual output\x1b[0m\r\n`);
+                    }
+                });
+                term.current?.write('\r\n\x1b[1;33m===================================\x1b[0m\r\n');
             };
         }
 
