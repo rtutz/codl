@@ -29,7 +29,7 @@ export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionN
     const addNewTab = async () => {
         try {
             // Make a POST request to create a new coding question
-            const response = await fetch(`/api/codingquestion`, {
+            const response = await fetch(`/api/question`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionN
     const removeTab = async (questionToRemove: ICodingQuestion) => {
         try {
             // Make a DELETE request to remove the coding question
-            const response = await fetch(`/api/codingquestion?id=${questionToRemove.id}`, {
+            const response = await fetch(`/api/question?id=${questionToRemove.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',

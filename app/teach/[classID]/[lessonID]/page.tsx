@@ -104,7 +104,7 @@ function LessonContent() {
 
         async function getCodingQuestions() {
             try {
-                const response = await fetch(`/api/codingquestion?lesson_id=${lessonID}`, {
+                const response = await fetch(`/api/question?lesson_id=${lessonID}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

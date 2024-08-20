@@ -79,7 +79,7 @@ export default function Coding({ lessonID, codingQuestions, setCodingQuestions }
     async function saveMarkdown() {
         if (!currQuestion) return; // Early return if currQuestion is undefined
 
-        const response = await fetch(`/api/codingquestion?id=${currQuestion.id}`, {
+        const response = await fetch(`/api/question?id=${currQuestion.id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

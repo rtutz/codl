@@ -62,7 +62,7 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
       // Fetch data from the backend
       const fetchData = async () => {
         try {
-          const response = await fetch(`/api/codingquestion?userId=${userId}&questionId=${questionId}`);
+          const response = await fetch(`/api/question?userId=${userId}&questionId=${questionId}`);
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
@@ -126,7 +126,7 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
 
   const updateCode = async (value: string) => {
     try {
-      const response = await fetch(`/api/codingquestion`, {
+      const response = await fetch(`/api/question`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
