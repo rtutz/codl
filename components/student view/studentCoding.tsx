@@ -173,8 +173,8 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
       const wsRef = terminalRefMap.current[currQuestion.id][1];
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
         setRunSignal(prev => prev + 1);
-        wsRef.current.send(JSON.stringify({ 
-          type: 'runTests', 
+        wsRef.current.send(JSON.stringify({
+          type: 'runTests',
           data: { code, testCases }
         }));
       } else {
@@ -201,7 +201,7 @@ const StudentCoding = ({ codingQuestions, setCodingQuestions }: IStudentCoding) 
           <Button className="mx-4 py-4" onClick={handleRunCode}>
             Run Code
           </Button>
-          <Button className="mx-4 py-4" variant='secondary' onClick={handleRunTests}>
+          <Button className="mx-4 py-4" variant='secondary' onClick={handleRunTests} disabled={!testCases || testCases.length === 0} >
             Run Tests
           </Button>
         </div>
