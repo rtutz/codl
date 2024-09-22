@@ -8,6 +8,7 @@
 <div align="center">
   
   [Visit us here!](https://codl-rho.vercel.app/)
+  ![codl-demo-compressed](https://github.com/user-attachments/assets/2cdb0ffb-da99-4452-be90-8b38ff94a9e5)
 
 </div>
 
