@@ -88,6 +88,7 @@ export default function LoggedOutHome() {
                                     width={1000} 
                                     height={300}
                                     className="rounded-lg shadow-2xl"
+                                    unoptimized={true}
                                 />
                                 <div className="absolute inset-0 bg-emerald-700 opacity-20 blur-xl -z-10 rounded-lg"></div>
                             </div>
