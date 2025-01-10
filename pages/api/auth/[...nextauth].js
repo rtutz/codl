@@ -17,17 +17,7 @@ export const authOptions = {
   },
 
   callbacks: {
-    async jwt({ token, account, profile }) {
-      // Persist the OAuth access_token and or the user id to the token right after signin
-      // if (account) {
-      //   token.accessToken = account.access_token
-      //   token.id = profile.id
-      // }
-      console.log("token in jwt func is", token);
-      return token
-    },
-    session({ session, token, user, isNewUser }) {
-      console.log("isNewUser is", isNewUser);
+    session({ session, user }) {
       session.user.id = user.id; //  Add role value to user object so it is passed along with session
       session.user.role = user.role;
       return session;
