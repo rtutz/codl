@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation'
 import { ChevronLeftIcon, Pencil1Icon, PersonIcon } from "@radix-ui/react-icons"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import Loader from "@/components/ui/loader"
 import { useClassRole } from "@/app/context/roleContext";
 
 import {
@@ -28,6 +29,7 @@ import { Switch } from "@/components/ui/switch"
 import { MouseEvent, useEffect, useState } from "react"
 import { usePathname } from 'next/navigation'
 import NewLessonBtn from "@/components/newLessonBtn"
+import { ContextMenu } from "@/components/ui/context-menu"
 
 interface Lesson {
     classId: number;
@@ -104,9 +106,9 @@ function ClassHome() {
     const [lessons, setLessons] = useState<Lesson[]>([]);
     const [classInfo, setClassInfo] = useState<Class>();
     const [newLessonName, setNewLessonName] = useState<string>('');
-
-    const { role } = useClassRole();
-    if (status !== "authenticated" || !role) redirect("/")
+    const [loading, setLoading] = useState(false);
+    const role = session?.user?.role as "TEACHER" | "STUDENT";
+    // if (status !== "authenticated" || !role) redirect("/")
 
     const router = useRouter();
     const pathname = usePathname();
@@ -120,8 +122,9 @@ function ClassHome() {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (classID && role) {
+            if (classID) {
                 const lessonsData = await getLessons(classID?.classID, role);
+                console.log("lessonsData is", lessonsData);
                 const transformedData: Lesson[] = lessonsData.map((lesson: any) => ({
                     ...lesson,
                     dueDate: new Date(lesson.dueDate), // Transform dueDate to a Date object
@@ -140,18 +143,28 @@ function ClassHome() {
     }, [])
 
     async function submitNewLesson() {
-        const response = await fetch(`/api/lesson`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name: newLessonName, classID: classID?.classID }),
-            cache: 'no-store',
-        });
+        // setLoading(true); 
+        console.log("Submitting new lesson")
 
-        const responseData = await response.json();
-        setNewLessonName('');
-        setLessons([...lessons, responseData]);
+        try {
+            const response = await fetch(`/api/lesson`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: newLessonName, classID: classID?.classID }),
+                cache: 'no-store',
+            });
+
+            const responseData = await response.json();
+            setNewLessonName('');
+            setLessons([...lessons, responseData]);
+        } catch (error) {
+            console.error('Error submitting lesson:', error);
+        }
+        // finally {
+        //     setLoading(false); 
+        // }
     }
 
     const switchPublish = async (id: string, checked: boolean) => {
@@ -178,76 +191,83 @@ function ClassHome() {
     };
 
     return (
-        <div>
-            <button className="flex items-center justify-start top-0 left-0 m-10" onClick={() => router.push('/')}>
+        <>
+            {loading && (
+                <div className="loading-screen">
+                    <Loader /> {/* Display the loader while loading */}
+                    <p>Loading...</p>
+                </div>
+            )}
 
+            <div>
+                <button className="flex items-center justify-start top-0 left-0 m-10" onClick={() => router.push('/')}>
+                    <ChevronLeftIcon className="h-4 w-4" color="#ADADAD" />
+                    <span className="gray text-sm">Back to all classes</span>
 
-                <ChevronLeftIcon className="h-4 w-4" color="#ADADAD" />
-                <span className="gray text-sm">Back to all classes</span>
-
-            </button>
-            {/* header */}
-            <div className="flex flex-col w-3/4 mx-auto">
-                <div className="m-10 w-full flex justify-between items-center flex-shrink-0 mx-auto">
-                    <div className="w-full h-full flex items-center">
-                        <Avatar className="h-1/6 w-1/6 mr-10">
-                            <AvatarImage src="https://github.com/shadcn.png" />
-                            <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col justify-start">
-                            <h1 className="text-3xl">{classInfo?.name}</h1>
-                            <span className="text-xs">{classInfo?.id}</span>
+                </button>
+                {/* header */}
+                <div className="flex flex-col w-3/4 mx-auto">
+                    <div className="m-10 w-full flex justify-between items-center flex-shrink-0 mx-auto">
+                        <div className="w-full h-full flex items-center">
+                            <Avatar className="h-1/6 w-1/6 mr-10">
+                                <AvatarImage src="https://github.com/shadcn.png" />
+                                <AvatarFallback>CN</AvatarFallback>
+                            </Avatar>
+                            <div className="flex flex-col justify-start">
+                                <h1 className="text-3xl">{classInfo?.name}</h1>
+                                <span className="text-xs">{classInfo?.id}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        {role === 'TEACHER' && <button>
+                        <div>
+                            {/* {role === 'TEACHER' && <button>
                             <Pencil1Icon />
-                        </button>}
+                        </button>} */}
+
+                        </div>
 
                     </div>
 
+                    {/* Manage Team Members */}
+                    {/* {role === 'TEACHER' && <button className="flex items-center space-x-4 text-xs gray max-w-fit">
+                    <PersonIcon /> <span>Manage Class Members</span>
+                </button>} */}
+
+                    {/* Create new Project */}
+                    {role === 'TEACHER' && <NewLessonBtn newLessonName={newLessonName} setNewLessonName={setNewLessonName} submitNewLesson={submitNewLesson} />}
+                    <Card>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[300px]">Title</TableHead>
+                                    {role === 'TEACHER' && <TableHead className="text-right">Published</TableHead>}
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {lessons.map((lesson) => (
+                                    
+                                    <TableRow key={lesson.id} onClick={(e) => openProject(e, lesson.id)}>
+                                        <TableCell className="font-medium">{lesson.name}</TableCell>
+                                        {role === 'TEACHER' &&
+                                            <TableCell className="text-right">
+                                                <Switch checked={lesson.published}
+                                                    onCheckedChange={(checked) => {
+                                                        switchPublish(lesson.id, checked);
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            </TableCell>}
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </Card>
                 </div>
 
-                {/* Manage Team Members */}
-                {role === 'TEACHER' && <button className="flex items-center space-x-4 text-xs gray max-w-fit">
-                    <PersonIcon /> <span>Manage Class Members</span>
-                </button>}
 
-                {/* Create new Project */}
-                {role === 'TEACHER' && <NewLessonBtn newLessonName={newLessonName} setNewLessonName={setNewLessonName} submitNewLesson={submitNewLesson} />}
-                <Card>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[300px]">Title</TableHead>
-                                {role === 'TEACHER' && <TableHead className="text-right">Published</TableHead>}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {lessons.map((lesson) => (
-                                <TableRow key={lesson.id} onClick={(e) => openProject(e, lesson.id)}>
-                                    <TableCell className="font-medium">{lesson.name}</TableCell>
-                                    {role === 'TEACHER' &&
-                                        <TableCell className="text-right">
-                                            <Switch checked={lesson.published}
-                                                onCheckedChange={(checked) => {
-                                                    switchPublish(lesson.id, checked);
-                                                }}
-                                                onClick={(e) => e.stopPropagation()}
-                                            />
-                                        </TableCell>}
-                                </TableRow>
-                            ))}
-                        </TableBody>
 
-                    </Table>
-                </Card>
+                {/* Who's Coding? */}
             </div>
-
-
-
-            {/* Who's Coding? */}
-        </div>
+        </>
     )
 }
 

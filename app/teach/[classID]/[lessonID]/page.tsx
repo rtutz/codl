@@ -15,6 +15,7 @@ import { useClassRole } from "@/app/context/roleContext";
 import StudentLecture from "@/components/student view/studentLecture";
 import StudentCoding from "@/components/student view/studentCoding";
 import StudentQuiz from "@/components/student view/studentQuiz";
+import Header from "@/components/header";
 
 interface Lesson {
     classId: number;
@@ -28,7 +29,8 @@ interface Lesson {
 interface ICodingQuestion {
     id: string,
     lessonId: string,
-    markdown: string
+    markdown: string,
+    modified: boolean;
 }
 
 interface IQuizQuestion {
@@ -72,10 +74,8 @@ function LessonContent() {
     const [lesson, setLesson] = useState<Lesson>();
 
     const { data: session, status, update } = useSession();
-    const { role } = useClassRole();
-    if (status !== "authenticated" || !role) redirect("/")
-
-
+    const role = session?.user?.role as "TEACHER" | "STUDENT";
+    // if (status !== "authenticated" || !role) redirect("/")
 
     const [lessonId, setLessonId] = useLessonIdContext();
     useEffect(() => {
@@ -113,7 +113,8 @@ function LessonContent() {
                 });
 
                 const data = await response.json();
-                setCodingQuestions(data);
+                const modifiedData = data.map((item: ICodingQuestion) => ({ ...item, modified: false }));
+                setCodingQuestions(modifiedData);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -145,7 +146,42 @@ function LessonContent() {
     }
 
     const renderContent = () => {
-        if (role === 'STUDENT') {
+        if (role === 'TEACHER') {
+            switch (currentView) {
+                case "lesson":
+                    return (
+                        <MarkdownProvider>
+                            <Lecture
+                                lectureContent={lesson?.lectureContent || ''}
+                                lessonID={lessonID}
+                                markdown={markdown}
+                                setMarkdown={setMarkdown}
+                                />
+                        </MarkdownProvider>
+                    );
+                    case "coding":
+                        return (
+                            <MarkdownProvider>
+                            <Coding
+                                lessonID={lessonID}
+                                codingQuestions={codingQuestions}
+                                setCodingQuestions={setCodingQuestions}
+                                />
+                        </MarkdownProvider>
+                    );
+                    case "quiz":
+                        return (
+                            <QuizView
+                            lessonID={lessonID}
+                            quizQuestions={quizQuestions}
+                            setQuizQuestions={setQuizQuestions}
+                            />
+                        );
+                        default:
+                            return null;
+            }
+        } else if (role === 'STUDENT') {
+            // Assuming 'STUDENT' role
             switch (currentView) {
                 case "lesson":
                     return (
@@ -169,52 +205,15 @@ function LessonContent() {
                 default:
                     return null;
             }
-        } else {
-            // Assuming 'TEACHER' role
-            switch (currentView) {
-                case "lesson":
-                    return (
-                        <MarkdownProvider>
-                            <Lecture
-                                lectureContent={lesson?.lectureContent || ''}
-                                lessonID={lessonID}
-                                markdown={markdown}
-                                setMarkdown={setMarkdown}
-                            />
-                        </MarkdownProvider>
-                    );
-                case "coding":
-                    return (
-                        <MarkdownProvider>
-                            <Coding
-                                lessonID={lessonID}
-                                codingQuestions={codingQuestions}
-                                setCodingQuestions={setCodingQuestions}
-                            />
-                        </MarkdownProvider>
-                    );
-                case "quiz":
-                    return (
-                        <QuizView
-                            lessonID={lessonID}
-                            quizQuestions={quizQuestions}
-                            setQuizQuestions={setQuizQuestions}
-                        />
-                    );
-                default:
-                    return null;
-            }
         }
     };
-
+    
 
 
     return (
-        <div className="flex min-h-screen">
-            {/* Side Nav */}
-            <SideNav updateCurrentView={updateView} />
-
-            <div className="flex-grow">
+        <div className="flex flex-col h-screen">
+            <Header updateCurrentView={updateView} />
+            <div className="flex-1 overflow-hidden">
                 {renderContent()}
             </div>
         </div>

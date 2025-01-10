@@ -23,7 +23,7 @@ export default async function handler(
     if (req.method === 'GET') {
         const lessonID = req.query.lesson_id ? (req.query.lesson_id as string) : undefined;
         const questionID = req.query.question_id ? parseInt(req.query.question_id as string, 10) : undefined;
-                const userID = req.query.user_id ? (req.query.user_id as string) : undefined;
+        const userID = req.query.user_id ? (req.query.user_id as string) : undefined;
 
 
         if (questionID && userID) {
@@ -66,6 +66,7 @@ export default async function handler(
     } else if (req.method === 'POST') {
         const lessonID = req.query.lesson_id as string;
         const questions: IQuizQuestion[] = req.body.questions;
+        console.log("questions that will be saved on the server are", questions);
 
         if (!lessonID) {
             return res.status(400).json({ message: 'No lessonID provided' });
@@ -77,8 +78,10 @@ export default async function handler(
 
         try {
             const results = await Promise.all(questions.map(async (question) => {
+                console.log("Question: ", question);
                 if (!question.id) {
                     // Create new question
+                    console.log("creating a new question with question", question)
                     return await client.quiz.create({
                         data: {
                             question: question.question,
@@ -95,6 +98,7 @@ export default async function handler(
                     });
                 } else if (question.modified) {
                     // Update existing question
+                    console.log("Update existing question")
                     const updatedQuestion = await client.quiz.update({
                         where: { id: question.id },
                         data: {
@@ -108,6 +112,7 @@ export default async function handler(
                     await Promise.all(question.choices.map(async (choice) => {
                         if (choice.id === null) {
                             // Create new choice
+                            console.log("Creating new choice with choice", choice)
                             await client.choice.create({
                                 data: {
                                     text: choice.text,
@@ -117,6 +122,7 @@ export default async function handler(
                             });
                         } else {
                             // Update existing choice
+                            console.log("Updating existing choice with choice", choice)
                             await client.choice.update({
                                 where: { id: parseInt(choice.id) },
                                 data: {
@@ -132,7 +138,7 @@ export default async function handler(
                 // If not modified, return the original question
                 return question;
             }));
-
+            console.log("Final results are", results);
             res.status(200).json(results);
         } catch (error) {
             console.error('Error processing questions:', error);
@@ -164,9 +170,21 @@ export default async function handler(
             console.error('Error updating user answers:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
+    } else if (req.method === 'DELETE') {
+        const { quizId } = req.body;
+    
+        try {
+            await client.quiz.delete({
+                where: { id: quizId }
+            });
+    
+            res.status(200).json({ message: 'Quiz deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting quiz:', error);
+            res.status(500).json({ error: 'An error occurred while deleting the quiz' });
+        }
     }
-
-    else {
+     else {
         res.status(405).json({ message: 'Method not allowed' });
     }
 }

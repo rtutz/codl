@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
     Card,
@@ -10,16 +10,20 @@ import {
 import SignOutBtn from "@/components/signOutBtn"
 import type { DefaultSession } from 'next-auth';
 import NewClassBtn from '@/components/newClassBtn';
-import JoinClassBtn from '@/components/joinClassBtn';
 import AlertUI from '@/components/error';
 import DisplayClasses from '@/components/displayClasses';
 import Link from "next/link";
 import { useClassRole } from "@/app/context/roleContext"
+import JoinClassBtn from '@/components/joinClassBtn';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 declare module 'next-auth' {
     interface Session {
         user: DefaultSession['user'] & {
             id: string;
+            role: "TEACHER" | "STUDENT"
         };
     }
 }
@@ -61,31 +65,28 @@ async function getClasses(user_id: string) {
 
 
 export default function LoggedInHome() {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
+    const { setRole, setUserId } = useClassRole();
     const router = useRouter();
     const [teacherClasses, setTeacherClasses] = useState<ClassData[]>([]);
-    const [studentClasses, setStudentClasses] = useState<ClassData[]>([]);
     const [newClassName, setNewClassName] = useState<string>('');
     const [classID, setClassID] = useState<string>('');
     const [showAlert, setShowAlert] = useState<boolean>(false);
 
-
-    const { setClassID: setClassIDContext, role, setRole, setUserId } = useClassRole();
-
+    useEffect(() => {
+        if (status === 'authenticated') {
+            setRole(session.user.role);
+            setUserId(session.user.id);
+        }
+    }, [status])
 
     useEffect(() => {
         const fetchData = async () => {
             if (session) {
                 const classesData: RawClassData[] = await getClasses(session?.user?.id);
-                const teacherClasses = classesData
-                    .filter((item) => item.role === 'TEACHER')
-                    .map(({ id, name }) => ({ id, name }));
+                const teacherClasses = classesData?.map(({ id, name }) => ({ id, name })) ?? [];
 
-                const studentClasses = classesData
-                    .filter((item) => item.role === 'STUDENT')
-                    .map(({ id, name }) => ({ id, name }));
                 setTeacherClasses(teacherClasses);
-                setStudentClasses(studentClasses);
             } else {
                 router.push('/');
             }
@@ -110,7 +111,7 @@ export default function LoggedInHome() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name: newClassName, userID: session?.user?.id, role: 'TEACHER' }),
+            body: JSON.stringify({ name: newClassName, userID: session?.user?.id }),
             cache: 'no-store',
         });
 
@@ -125,7 +126,7 @@ export default function LoggedInHome() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ userID: session?.user?.id, role: 'STUDENT', classID: classID }),
+            body: JSON.stringify({ userID: session?.user?.id, classID: classID }),
             cache: 'no-store',
         });
 
@@ -135,55 +136,90 @@ export default function LoggedInHome() {
         } else {
             const responseData = await response.json();
             setClassID('');
-            setStudentClasses([...studentClasses, responseData]);
+            router.push(`teach/${responseData.id}`)
         }
     }
+
 
     function updateDisplayedClasses(classID: string) {
         setTeacherClasses((prevTeacherClasses) =>
             prevTeacherClasses.filter((cls) => cls.id !== classID)
         );
-
-        setStudentClasses((prevStudentClasses) =>
-            prevStudentClasses.filter((cls) => cls.id !== classID)
-        );
     }
 
-    const handleClassClick = (classID: string, role: string) => {
-        setClassID(classID);
-        setRole(role);
-        setUserId(session?.user?.id);
+    const handleRoleSwitch = () => {
+        // Implement the logic to switch the user's role to teacher
+        // This should include API calls and state updates
+        console.log("Switching to teacher role");
     };
+
+    // const handleClassClick = (classID: string, role: string) => {
+    //     setClassID(classID);
+    //     setUserId(session?.user?.id);
+    // };
 
     if (!session) {
         return null; // or render a loading state
     }
 
     return (
-        <div>
-            {showAlert && <AlertUI message={"The given class ID do not exist or you are already teaching this class."} styling={'destructive'} />}
+        <div className="min-h-screen">
+            {showAlert && <AlertUI message="The given class ID does not exist or you are already teaching this class." styling="destructive" />}
 
-            {/* Back button */}
-            <SignOutBtn />
+            {/* Header with profile dropdown */}
+            <header className=" shadow-sm">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                    <h1 className="text-2xl font-boldx">Dashboard</h1>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Avatar className="h-10 w-10 cursor-pointer">
+                                <AvatarImage src={session.user.image || "https://github.com/shadcn.png"} alt={session.user.name || ""} />
+                            </Avatar>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                            {session.user.role === 'STUDENT' && (
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                            Switch to Teacher
+                                        </DropdownMenuItem>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This action cannot be undone. Switching to a teacher role will delete all your current classes.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleRoleSwitch}>Continue</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            )}
+                            <DropdownMenuItem onSelect={() =>signOut()}>Sign out</DropdownMenuItem>
+                        </DropdownMenuContent>
 
+                    </DropdownMenu>
+                </div>
+            </header>
 
-
-            {/* Div for center materials */}
-            <div className="flex flex-col items-center min-h-screen mt-10 w-full">
-
-                <div className="w-1/2">
-                    <div className="flex justify-between items-center mb-4">
-                        <h1 className="font-semibold text-2xl">Instructed Classes</h1>
-
-                        <NewClassBtn newClassName={newClassName} setNewClassName={setNewClassName} submitNewClass={submitNewClass} />
-
-
+            {/* Main content */}
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className=" shadow-sm rounded-lg p-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-semibold">Your Classes</h2>
+                        {session.user.role === 'TEACHER' ? (
+                            <NewClassBtn newClassName={newClassName} setNewClassName={setNewClassName} submitNewClass={submitNewClass} />
+                        ) : (
+                            <JoinClassBtn classID={classID} setClassID={setClassID} submitJoinClass={submitJoinClass} />
+                        )}
                     </div>
-                    <Card className="p-5">
-                        <CardContent className="gray p-0 space-y-6">
-                            {/* Would be the individual class */}
+                    <Card className="">
+                        <CardContent className="p-4 space-y-4">
                             {teacherClasses.map((item, i) => (
-                                <Link href={`/teach/${item.id}`} key={`teacher-${i}`} onClick={() => handleClassClick(item.id, 'TEACHER')}>
+                                <Link href={`/teach/${item.id}`} key={`teacher-${i}`}>
                                     <DisplayClasses
                                         classID={item.id}
                                         name={item.name}
@@ -196,31 +232,7 @@ export default function LoggedInHome() {
                         </CardContent>
                     </Card>
                 </div>
-
-                <div className="w-1/2 mt-20">
-                    <div className="flex justify-between items-center mb-4">
-                        <h1 className="font-semibold text-2xl">Enrolled Classes</h1>
-                        <JoinClassBtn classID={classID} setClassID={setClassID} submitJoinClass={submitJoinClass} />
-                    </div>
-                    <Card className="p-5">
-                        <CardContent className="gray p-0 space-y-6 gray">
-                            {/* Would be the individual class */}
-                            {studentClasses.map((item, i) => (
-                                <Link href={`/teach/${item.id}`} key={`student-${i}`} onClick={() => handleClassClick(item.id, 'STUDENT')}>
-                                    <DisplayClasses
-                                        classID={item.id}
-                                        name={item.name}
-                                        deleteEntireClass={false}
-                                        userID={session?.user?.id}
-                                        updateDisplayedClasses={updateDisplayedClasses}
-                                    />
-                                </Link>
-                            ))}
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
-
+            </main>
         </div>
     )
 }

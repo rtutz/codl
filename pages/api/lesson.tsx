@@ -16,7 +16,7 @@ export default async function handler(
         try {
             const lessonID = req.query.lesson_id ? (req.query.lesson_id as string) : undefined;
             const classID = req.query.class_id ? (req.query.class_id as string) : undefined;
-            const role = req.query.role ? (req.query.role as string) : undefined;
+            const role = req.query.role ? (req.query.role as string) : 'STUDENT';
 
             if (lessonID) {
                 const lessonsData = await client.lesson.findUnique({
@@ -29,7 +29,7 @@ export default async function handler(
                 return res.status(200).json(lessonsData)
             }
 
-            if (classID && role) {
+            if (classID) {
                 const whereClause = {
                     classId: classID,
                     ...(role === 'STUDENT' && { published: true })

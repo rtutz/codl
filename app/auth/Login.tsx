@@ -3,14 +3,18 @@
 import { signIn } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 
-export default function Login() {
+interface LoginProps {
+    className?: string;
+}
+
+export default function Login({ className }: LoginProps) {
     return (
         <Button
             onClick={() => signIn()}
-            className="w-full"
-            variant="default"
+            variant="outline"
+            className={className}
         >
             Sign in
         </Button>
-    )
+    );
 }

@@ -29,6 +29,11 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
                 cursorBlink: true,
                 fontSize: 14,
                 fontFamily: 'Consolas, monospace',
+                theme: {
+                    background: '#020817'
+                },
+                scrollback: 0
+
             });
             term.current.open(terminalRef.current);
 
@@ -106,7 +111,6 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
             } else if (data === '\u007F') { // Backspace
                 if (inputBufferRef.current.length > 0) {
                     inputBufferRef.current = inputBufferRef.current.slice(0, -1);
-                    console.log("Input buffer is", inputBufferRef.current);
 
                     if (term.current) {
                         // Move the cursor back, overwrite with a space, and move back again
@@ -128,8 +132,8 @@ const TerminalWindow: React.FC<ITerminalWindow> = ({ terminalRef, pythonCode, ws
     }, []);
 
     return (
-        <div ref={terminalRef} style={{ height: '100%', width: '100%' }}>
-        </div>
+
+        <div ref={terminalRef} style={{ height: '100%', width: '100%' }} />
     );
 };
 

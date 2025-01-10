@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from "@radix-ui/react-icons"
+import { ChevronLeftIcon, ChevronRightIcon, PlusIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons"
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { useClassRole } from '@/app/context/roleContext';
+import { useSession } from 'next-auth/react';
 
 interface IQuizQuestion {
   id?: number;
@@ -20,19 +21,22 @@ interface Props {
 }
 
 const StudentQuiz = ({ lessonID, quizQuestions }: Props) => {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(quizQuestions.length === 0 ? -1 : 0);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [isAnswerSubmitted, setIsAnswerSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
-  const currentQuestion = quizQuestions[currentQuestionIndex];
-
-  const { userId } = useClassRole();
+  // const currentQuestion = quizQuestions[currentQuestionIndex];
+  const { data: session, status, update } = useSession();
+  console.log("session is", session);
+  const userId = session?.user.id
 
   useEffect(() => {
     const fetchUserAnswers = async () => {
-      if (!currentQuestion.id || !userId) return;
+      if (currentQuestionIndex < 0 || !userId) return;
 
+      const currentQuestion = quizQuestions[currentQuestionIndex];
+      
       try {
         const response = await fetch(`/api/quiz?question_id=${currentQuestion.id}&user_id=${userId}`);
         if (!response.ok) {
@@ -80,18 +84,19 @@ const StudentQuiz = ({ lessonID, quizQuestions }: Props) => {
   };
 
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (question: IQuizQuestion) => {
     if (selectedAnswers.length > 0) {
       const allCorrect = selectedAnswers.every(answerId => {
-        const selectedChoice = currentQuestion.choices.find(choice => choice.id === answerId);
+        const selectedChoice = question.choices.find(choice => choice.id === answerId);
         return selectedChoice?.isCorrect;
       });
-      const allSelectedCorrect = currentQuestion.choices
+      const allSelectedCorrect = question.choices
         .filter(choice => choice.isCorrect)
         .every(choice => selectedAnswers.includes(choice.id));
       setIsCorrect(allCorrect && allSelectedCorrect);
       setIsAnswerSubmitted(true);
 
+      if (!userId) { return }
       try {
         const response = await fetch('/api/quiz', {
           method: 'PATCH',
@@ -101,7 +106,7 @@ const StudentQuiz = ({ lessonID, quizQuestions }: Props) => {
           body: JSON.stringify({
             userId,
             selectedAnswers,
-            quizId: currentQuestion.id
+            quizId: question.id
           }),
         });
 
@@ -135,17 +140,56 @@ const StudentQuiz = ({ lessonID, quizQuestions }: Props) => {
     }
   };
 
+  if (currentQuestionIndex < 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <QuestionMarkCircledIcon className="w-24 h-24 text-gray-500 mb-4" />
+        <span className="text-3xl font-semibold text-gray-400">
+          No questions available
+        </span>
+        <p className="text-xl text-gray-500 mt-2">
+          Ask your teacher to add some questions!
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen flex flex-col p-6 text-white">
+      <div className="flex justify-between items-center mt-8">
+        <Button
+          variant="outline"
+          onClick={handlePreviousQuestion}
+          disabled={currentQuestionIndex === 0}
+          className="w-28"
+        >
+          <ChevronLeftIcon className="mr-2 h-4 w-4" /> Previous
+        </Button>
+        <Button
+          onClick={() => handleSubmit(quizQuestions[currentQuestionIndex])}
+          disabled={selectedAnswers.length === 0 || isAnswerSubmitted}
+          className="w-28"
+        >
+          Submit
+        </Button>
+        <Button
+          variant="outline"
+          onClick={handleNextQuestion}
+          disabled={currentQuestionIndex === quizQuestions.length - 1}
+          className="w-28"
+        >
+          Next <ChevronRightIcon className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
       <div className="mb-6">
         <h2 className="text-2xl font-bold mb-2">Question {currentQuestionIndex + 1} of {quizQuestions.length}</h2>
         <Progress value={(currentQuestionIndex + 1) / quizQuestions.length * 100} className="w-full" />
       </div>
 
       <div className="flex-grow">
-        <h3 className="text-xl font-semibold mb-6">{currentQuestion.question}</h3>
+        <h3 className="text-xl font-semibold mb-6">{quizQuestions[currentQuestionIndex].question}</h3>
         <div className="space-y-4">
-          {currentQuestion.choices.map((choice) => (
+          {quizQuestions[currentQuestionIndex].choices.map((choice) => (
             <div
               key={choice.id}
               className={`flex items-center space-x-3 p-3 rounded-lg border ${isAnswerSubmitted
@@ -172,9 +216,9 @@ const StudentQuiz = ({ lessonID, quizQuestions }: Props) => {
           ))}
         </div>
 
-        {currentQuestion.hint && (
+        {quizQuestions[currentQuestionIndex].hint && (
           <Alert className="mt-6 bg-gray-800 text-gray-400">
-            <AlertDescription>{currentQuestion.hint}</AlertDescription>
+            <AlertDescription>{quizQuestions[currentQuestionIndex].hint}</AlertDescription>
           </Alert>
         )}
 
@@ -185,32 +229,6 @@ const StudentQuiz = ({ lessonID, quizQuestions }: Props) => {
             </AlertDescription>
           </Alert>
         )}
-      </div>
-
-      <div className="flex justify-between items-center mt-8">
-        <Button
-          variant="outline"
-          onClick={handlePreviousQuestion}
-          disabled={currentQuestionIndex === 0}
-          className="w-28"
-        >
-          <ChevronLeftIcon className="mr-2 h-4 w-4" /> Previous
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          disabled={selectedAnswers.length === 0 || isAnswerSubmitted}
-          className="w-28"
-        >
-          Submit
-        </Button>
-        <Button
-          variant="outline"
-          onClick={handleNextQuestion}
-          disabled={currentQuestionIndex === quizQuestions.length - 1}
-          className="w-28"
-        >
-          Next <ChevronRightIcon className="ml-2 h-4 w-4" />
-        </Button>
       </div>
     </div>
   );

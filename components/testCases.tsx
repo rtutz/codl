@@ -14,6 +14,7 @@ import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import TestCaseBtn from "./TestCaseBtn";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 
 interface ITestCases {
     id: string,
@@ -28,7 +29,7 @@ interface ITestCasesProp {
 
 export default function TestCases({ codingQuestionId }: ITestCasesProp) {
     const [testCases, setTestCases] = useState<ITestCases[]>();
-
+    console.log("testCases are", testCases)
 
     useEffect(() => {
         async function getData() {
@@ -99,14 +100,52 @@ export default function TestCases({ codingQuestionId }: ITestCasesProp) {
 
 
     return (
-        <div className="flex flex-col">
-            <TestCaseBtn id='' givenInput='' givenOutput='' handleSubmit={updateTest} message='Create New Test'  variant='default'/>
-
-            <div className="space-y-2 mt-2">
-                {testCases?.map((item, index) => (
-                    <TestCaseBtn key={item.id} id={item.id} givenInput={item.input} givenOutput={item.output} handleSubmit={updateTest} message={`Test case #${index + 1}`} variant='outline'/>
-                ))}
-            </div>
-        </div>
+        <div className="flex flex-col space-y-4 p-4 border rounded-lg shadow-sm">
+        <TestCaseBtn
+          id=""
+          givenInput=""
+          givenOutput=""
+          handleSubmit={updateTest}
+          message="Create New Test"
+          variant="default"
+        >
+          <PlusCircledIcon className="mr-2 h-4 w-4" />
+          Create New Test
+        </TestCaseBtn>
+  
+        {(!testCases || testCases.length === 0) ? (
+          <div className="flex flex-col items-center justify-center h-40 text-gray-400">
+            <svg
+              className="h-16 w-16 mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+            <p className="text-lg font-semibold">No test cases yet</p>
+            <p>Create a new test case to get started</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {testCases?.map((item, index) => (
+              <TestCaseBtn
+                key={item.id}
+                id={item.id}
+                givenInput={item.input}
+                givenOutput={item.output}
+                handleSubmit={updateTest}
+                message={`Test case #${index + 1}`}
+                variant="outline"
+              />
+            ))}
+          </div>
+        )}
+      </div>
     )
 }

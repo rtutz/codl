@@ -18,7 +18,7 @@ export default async function handler(
 
             const name: string = req.body?.name;
             const userID: string = req.body?.userID;
-            const role = req.body?.role;
+            const isNewClass = !Boolean(req.body?.classID);
             const classID = req.body?.classID || nanoid(5);
 
             const returnValue = {
@@ -26,17 +26,16 @@ export default async function handler(
                 name: name
             }
 
-            if (role === 'TEACHER') {
-                const data = await client.class.create({
+            if (isNewClass) {
+                await client.class.create({
                     data: returnValue
-                })
+                });
             }
 
-            const updatedUserClassMap = await client.userClassMap.create({
+            await client.userClassMap.create({
                 data: {
                     userID: userID,
-                    classID: classID,
-                    role: role,
+                    classID: classID
                 }
             })
             res.status(200).json(returnValue);
@@ -76,7 +75,7 @@ export default async function handler(
                 return res.status(200).json(`Successfully deleted class with ID ${classID} from user ${userID}'s current classes`);
             }
 
-            
+
 
         } catch (error) {
             console.error(error);
@@ -86,27 +85,27 @@ export default async function handler(
         try {
             const userID = req.query.user_id ? (req.query.user_id as string) : undefined;
             const classID = req.query.class_id ? (req.query.class_id as string) : undefined;
-      
+
             if (userID) {
                 const userClassData = await client.userClassMap.findMany({
                     where: {
                         userID: userID
                     }
                 })
-            
+
                 const classData = await client.class.findMany();
-    
+
                 // This is just a SQL inner join since prisma does not support JOIN
                 const joinedData = userClassData.map(userClass => {
                     const matchingClass = classData.find(cls => cls.id === userClass.classID);
                     return {
-                      ...userClass,
-                      className: matchingClass ? matchingClass.name : null,
-                      ...matchingClass
+                        ...userClass,
+                        className: matchingClass ? matchingClass.name : null,
+                        ...matchingClass
                     };
-                  });
-    
-    
+                });
+
+
                 return res.status(200).json(joinedData)
             }
 
@@ -121,9 +120,9 @@ export default async function handler(
             }
 
             res.status(500).json("Invalid endpoint for class.");
-          } catch (error) {
+        } catch (error) {
             res.status(500).json({ error: 'Failed to fetch data' });
-          }
+        }
     }
 
 

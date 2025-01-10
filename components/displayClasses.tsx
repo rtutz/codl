@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Cross1Icon } from "@radix-ui/react-icons"
 import { useState } from "react"
 import AlertUI from "./error"
+import { useClassRole } from "@/app/context/roleContext"
 
 interface IClass {
     classID: string,
@@ -15,9 +16,11 @@ interface IClass {
 
 export default function DisplayClasses({ classID, name, deleteEntireClass, userID, updateDisplayedClasses }: IClass) {
     const [showAlert, setShowAlert] = useState<boolean>(false);
+    const { role } = useClassRole();
     // const [setClassID, setRole] = useClassRole()
 
-    async function deleteClass() {
+    async function deleteClass(e: React.MouseEvent<HTMLButtonElement>) {
+        e.preventDefault();
         const response = await fetch(`/api/class`, {
             method: 'DELETE',
             headers: {
@@ -31,7 +34,6 @@ export default function DisplayClasses({ classID, name, deleteEntireClass, userI
             setShowAlert(true);
             return;
         } else {
-            const responseData = await response.json();
             updateDisplayedClasses(classID);
         }
 
@@ -40,16 +42,19 @@ export default function DisplayClasses({ classID, name, deleteEntireClass, userI
 
     return (
         <>
-            {showAlert && <AlertUI message={"There was an error deleting this project."} styling={'destructive'}/>}
+            {showAlert && <AlertUI message={"There was an error deleting this project."} styling={'destructive'} />}
             <div className="flex justify-between items-center hover:text-white" key={classID}>
-                    <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <button>{name}</button>
-                <button onClick={deleteClass}>
-                    <Cross1Icon />
-                </button>
+                <Avatar>
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <button>{name}</button>
+                {role === 'TEACHER' ?
+                    <button onClick={deleteClass}>
+                        <Cross1Icon />
+                    </button>
+                : 
+                    <div/>}
             </div>
         </>
     )
