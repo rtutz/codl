@@ -7,8 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CheckCircledIcon, CodeIcon, Share2Icon } from "@radix-ui/react-icons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
+import Image from 'next/image';
+
 
 export default function LoggedOutHome() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -81,9 +82,11 @@ export default function LoggedOutHome() {
                         </div>
                         <div className="md:w-1/2">
                             <div className="relative">
-                                <img
+                                <Image
                                     src="/demo-codl.gif"
                                     alt="Demo"
+                                    width={1000} 
+                                    height={300}
                                     className="rounded-lg shadow-2xl"
                                 />
                                 <div className="absolute inset-0 bg-emerald-700 opacity-20 blur-xl -z-10 rounded-lg"></div>
