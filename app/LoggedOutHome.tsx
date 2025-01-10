@@ -83,8 +83,7 @@ export default function LoggedOutHome() {
                         <div className="md:w-1/2">
                             <div className="relative">
                                 <Image
-                                    // src="/demo-codl.gif"
-                                    src="/next.svg"
+                                    src="https://i.imgur.com/A7W4gAe.gif"
                                     alt="Demo"
                                     width={1000} 
                                     height={300}
