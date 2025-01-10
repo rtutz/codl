@@ -145,7 +145,7 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
                     No questions yet
                 </span>
                 <p className="text-xl text-gray-600 mt-2 text-center">
-                    Oh, you don't have any questions!<br />
+                    Oh, you do not have any questions!<br />
                     Click the button above to add a question.
                 </p>
             </div>

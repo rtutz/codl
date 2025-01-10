@@ -157,7 +157,7 @@ export default function Coding({ lessonID, codingQuestions, setCodingQuestions }
               No challenges yet
             </span>
             <p className="text-xl text-gray-600 mt-2 text-center">
-              Oh, you don't have any challenges!<br />
+              Oh, you do not have any challenges!<br />
               Click the button above to add a challenge.
             </p>
           </div>
