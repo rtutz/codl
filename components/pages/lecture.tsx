@@ -1,11 +1,11 @@
 "use client"
 import { useMarkdown } from "@/providers/markdownProvider"
-import { useLessonIdContext } from "@/app/context/lessonContext"
+import { useLessonIdContext } from "@/components/lessons/lessonContext"
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import AlertUI from "../error";
-import MarkdownPreview from "../markdownPreview";
-import MarkdownEditor from "../markdownEditor";
+import MarkdownPreview from "../editor/markdownPreview";
+import MarkdownEditor from "../editor/markdownEditor";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable";
 import { ScrollArea } from "../ui/scroll-area";
 import { CheckIcon } from "@radix-ui/react-icons";

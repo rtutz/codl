@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Cross1Icon } from "@radix-ui/react-icons"
 import { useState } from "react"
-import AlertUI from "./error"
+import AlertUI from "../error"
 import { useClassRole } from "@/app/context/roleContext"
 
 interface IClass {

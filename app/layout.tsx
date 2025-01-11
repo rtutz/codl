@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Fira_Code } from "next/font/google";
 import "./globals.css";
-import AuthContext from './auth/AuthContext';
+import AuthContext from '../components/auth/AuthContext';
 import { ClassRoleProvider } from '@/app/context/roleContext';
 import { Toaster } from "@/components/ui/toaster"
 

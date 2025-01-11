@@ -1,6 +1,6 @@
 "use client"
 
-import { useLessonIdContext } from "@/app/context/lessonContext"
+import { useLessonIdContext } from "@/components/lessons/lessonContext"
 import IndividualQuiz from "../individualQuiz";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -58,7 +58,7 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
 
     const deleteQuestion = async () => {
         const deletedQuestion = quizQuestions[currentQuestionIndex];
-    
+
         if (deletedQuestion.id) {
             const response = await fetch(`/api/quiz`, {
                 method: 'DELETE',
@@ -73,10 +73,10 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
                 throw new Error('Failed to delete data');
             }
         }
-        
+
         const newQuizQuestions = quizQuestions.toSpliced(currentQuestionIndex, 1);
         setQuizQuestions(newQuizQuestions);
-    
+
         // Adjust the currentQuestionIndex based on the deletion
         if (currentQuestionIndex === 0 && newQuizQuestions.length > 0) {
             // If first element was deleted and there are remaining questions,
@@ -90,7 +90,7 @@ export default function QuizView({ lessonID, quizQuestions, setQuizQuestions }: 
             setCurrentQuestionIndex(-1);
         }
     }
-    
+
     const handleSaveQuestions = async () => {
         try {
             const response = await fetch(`/api/quiz?lesson_id=${lessonID}`, {

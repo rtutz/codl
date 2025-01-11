@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/resizable"
 import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
-import MarkdownPreview from "../markdownPreview";
+import MarkdownPreview from "../editor/markdownPreview";
 import { ViewUpdate } from '@codemirror/view';
 import { useClassRole } from "@/app/context/roleContext";
 import useDebounce from "@/lib/useDebounce";
-import TerminalWindow from "../terminal";
+import TerminalWindow from "../coding/terminal";
 import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
 import { run } from "node:test";

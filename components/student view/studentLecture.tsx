@@ -5,11 +5,11 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { useState, useCallback, useRef } from "react";
-import MarkdownPreview from "../markdownPreview";
+import MarkdownPreview from "../editor/markdownPreview";
 import CodeMirror from '@uiw/react-codemirror';
 import { python, } from '@codemirror/lang-python';
 import { EditorView, ViewUpdate } from '@codemirror/view';
-import TerminalWindow from "../terminal";
+import TerminalWindow from "../coding/terminal";
 import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
 import { ScrollArea } from "@/components/ui/scroll-area"

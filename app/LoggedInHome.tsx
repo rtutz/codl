@@ -7,14 +7,14 @@ import {
     Card,
     CardContent
 } from "@/components/ui/card"
-import SignOutBtn from "@/components/signOutBtn"
+import SignOutBtn from "@/components/common/signOutBtn"
 import type { DefaultSession } from 'next-auth';
-import NewClassBtn from '@/components/newClassBtn';
+import NewClassBtn from '@/components/classes/newClassBtn';
 import AlertUI from '@/components/error';
-import DisplayClasses from '@/components/displayClasses';
+import DisplayClasses from '@/components/classes/displayClasses';
 import Link from "next/link";
 import { useClassRole } from "@/app/context/roleContext"
-import JoinClassBtn from '@/components/joinClassBtn';
+import JoinClassBtn from '@/components/classes/joinClassBtn';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';

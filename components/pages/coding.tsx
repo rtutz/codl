@@ -1,11 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useLessonIdContext } from "@/app/context/lessonContext"
+import { useLessonIdContext } from "@/components/lessons/lessonContext"
 import { Button } from "../ui/button"
 import Tab from "../tab"
-import MarkdownEditor from "../markdownEditor"
-import MarkdownPreview from "../markdownPreview"
+import MarkdownEditor from "../editor/markdownEditor"
+import MarkdownPreview from "../editor/markdownPreview"
 import AlertUI from "../error"
 import {
     Tabs,
@@ -13,7 +13,7 @@ import {
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
-import TestCases from "../testCases"
+import TestCases from "../coding/testCases"
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable"
 import { ScrollArea } from "../ui/scroll-area"
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon, PlusCircledIcon, PlusIcon } from "@radix-ui/react-icons"
@@ -36,7 +36,7 @@ interface ICodingQuestion {
 export default function Coding({ lessonID, codingQuestions, setCodingQuestions }: ICoding) {
     const [currQuestion, setCurrQuestion] = useState<ICodingQuestion>();
     const [currQuestionIndex, setCurrQuestionIndex] = useState(codingQuestions.length === 0 ? -1 : 0);
-    
+
     useEffect(() => {
         setCurrQuestion(codingQuestions[currQuestionIndex]);
     }, [currQuestionIndex])
@@ -145,24 +145,24 @@ export default function Coding({ lessonID, codingQuestions, setCodingQuestions }
 
     if (codingQuestions.length === 0) {
         return (
-          <div className="flex flex-col items-center justify-center h-screen">
-            <button
-              onClick={addNewQuestion}
-              className="group transition-transform duration-200 hover:scale-110"
-              aria-label="Add new question"
-            >
-              <PlusCircledIcon className="w-24 h-24 text-gray-700 mb-4 group-hover:text-gray-600" />
-            </button>
-            <span className="text-3xl font-semibold text-gray-700">
-              No challenges yet
-            </span>
-            <p className="text-xl text-gray-600 mt-2 text-center">
-              Oh, you do not have any challenges!<br />
-              Click the button above to add a challenge.
-            </p>
-          </div>
+            <div className="flex flex-col items-center justify-center h-screen">
+                <button
+                    onClick={addNewQuestion}
+                    className="group transition-transform duration-200 hover:scale-110"
+                    aria-label="Add new question"
+                >
+                    <PlusCircledIcon className="w-24 h-24 text-gray-700 mb-4 group-hover:text-gray-600" />
+                </button>
+                <span className="text-3xl font-semibold text-gray-700">
+                    No challenges yet
+                </span>
+                <p className="text-xl text-gray-600 mt-2 text-center">
+                    Oh, you do not have any challenges!<br />
+                    Click the button above to add a challenge.
+                </p>
+            </div>
         )
-      }
+    }
 
     return (
         <>

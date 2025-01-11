@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 
-import { useLessonIdContext } from "@/app/context/lessonContext"
+import { useLessonIdContext } from "@/components/lessons/lessonContext"
 import AlertUI from "./error"
 
 interface ICodingQuestion {
@@ -19,7 +19,7 @@ interface IProps {
     role?: 'Teacher' | 'Student';
 }
 
-export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionNum, setCodingQuestions, role='Teacher' }: IProps) {
+export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionNum, setCodingQuestions, role = 'Teacher' }: IProps) {
     const [lessonId, setLessonId] = useLessonIdContext();
 
     const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -112,8 +112,8 @@ export default function Tab({ codingQuestions, currQuestion, updateCurrQuestionN
                         <div
                             key={item.id}
                             className={`px-4 py-2 rounded-t-2xl transition-colors duration-300 flex-shrink-0 flex items-center ${item.id === currQuestion?.id
-                                    ? 'bg-gray-800 text-white'
-                                    : 'text-gray-300 hover:bg-gray-700'
+                                ? 'bg-gray-800 text-white'
+                                : 'text-gray-300 hover:bg-gray-700'
                                 }`}
                         >
                             <button

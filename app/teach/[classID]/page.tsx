@@ -28,7 +28,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { MouseEvent, useEffect, useState } from "react"
 import { usePathname } from 'next/navigation'
-import NewLessonBtn from "@/components/newLessonBtn"
+import NewLessonBtn from "@/components/lessons/newLessonBtn"
 import { ContextMenu } from "@/components/ui/context-menu"
 
 interface Lesson {

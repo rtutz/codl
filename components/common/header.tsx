@@ -3,7 +3,7 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 
 interface IHeader {

@@ -1,4 +1,4 @@
-import { Textarea } from "./ui/textarea";
+import { Textarea } from "../ui/textarea";
 
 interface IMarkdownEditor {
   markdown: string | undefined;
