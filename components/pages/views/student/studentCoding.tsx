@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useEffect, useState, useCallback, useRef, createRef } from "react";
-import AlertUI from "../error";
-import Tab from "../tab"
-import { Button } from "../ui/button"
+import AlertUI from "../../../common/error";
+import { Button } from "../../../ui/button"
 import {
   ResizableHandle,
   ResizablePanel,
@@ -11,17 +10,17 @@ import {
 } from "@/components/ui/resizable"
 import CodeMirror from '@uiw/react-codemirror';
 import { python } from '@codemirror/lang-python';
-import MarkdownPreview from "../editor/markdownPreview";
+import MarkdownPreview from "../../../editor/markdownPreview";
 import { ViewUpdate } from '@codemirror/view';
 import { useClassRole } from "@/app/context/roleContext";
 import useDebounce from "@/lib/useDebounce";
-import TerminalWindow from "../coding/terminal";
+import TerminalWindow from "../../../coding/terminal";
 import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
 import { run } from "node:test";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea } from "../../../ui/scroll-area";
 import { ChevronLeftIcon, ChevronRightIcon, PlayIcon, QuestionMarkCircledIcon, RocketIcon } from "@radix-ui/react-icons"
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "../../../ui/tooltip";
 import { useSession } from "next-auth/react";
 
 

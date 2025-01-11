@@ -10,7 +10,7 @@ import {
 import SignOutBtn from "@/components/common/signOutBtn"
 import type { DefaultSession } from 'next-auth';
 import NewClassBtn from '@/components/classes/newClassBtn';
-import AlertUI from '@/components/error';
+import AlertUI from '@/components/common/error';
 import DisplayClasses from '@/components/classes/displayClasses';
 import Link from "next/link";
 import { useClassRole } from "@/app/context/roleContext"
@@ -198,7 +198,7 @@ export default function LoggedInHome() {
                                     </AlertDialogContent>
                                 </AlertDialog>
                             )}
-                            <DropdownMenuItem onSelect={() =>signOut()}>Sign out</DropdownMenuItem>
+                            <DropdownMenuItem onSelect={() => signOut()}>Sign out</DropdownMenuItem>
                         </DropdownMenuContent>
 
                     </DropdownMenu>

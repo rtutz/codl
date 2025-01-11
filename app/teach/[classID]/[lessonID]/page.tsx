@@ -1,20 +1,20 @@
 "use client"
 
-import Lecture from "@/components/pages/lecture"
+import Lecture from "@/components/pages/views/teacher/lecture"
 import MarkdownProvider from "@/providers/markdownProvider"
 import { redirect, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import SideNav from "@/components/common/sideNav";
-import Coding from "@/components/pages/coding";
-import QuizView from "@/components/pages/quiz";
+import Coding from "@/components/pages/views/teacher/coding";
+import QuizView from "@/components/pages/views/teacher/quiz";
 import { useMarkdown } from "@/providers/markdownProvider"
 import { LessonIdProvider, useLessonIdContext } from '../../../../components/lessons/lessonContext'
 import { } from "../../../../components/lessons/lessonContext";
 import { useSession } from "next-auth/react"
 import { useClassRole } from "@/app/context/roleContext";
-import StudentLecture from "@/components/student view/studentLecture";
-import StudentCoding from "@/components/student view/studentCoding";
-import StudentQuiz from "@/components/student view/studentQuiz";
+import StudentLecture from "@/components/pages/views/student/studentLecture";
+import StudentCoding from "@/components/pages/views/student/studentCoding";
+import StudentQuiz from "@/components/pages/views/student/studentQuiz";
 import Header from "@/components/common/header";
 
 interface Lesson {

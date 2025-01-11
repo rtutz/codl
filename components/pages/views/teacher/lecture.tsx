@@ -2,12 +2,12 @@
 import { useMarkdown } from "@/providers/markdownProvider"
 import { useLessonIdContext } from "@/components/lessons/lessonContext"
 import { useEffect, useRef, useState } from "react";
-import { Button } from "../ui/button";
-import AlertUI from "../error";
-import MarkdownPreview from "../editor/markdownPreview";
-import MarkdownEditor from "../editor/markdownEditor";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable";
-import { ScrollArea } from "../ui/scroll-area";
+import { Button } from "../../../ui/button";
+import AlertUI from "../../../common/error";
+import MarkdownPreview from "../../../editor/markdownPreview";
+import MarkdownEditor from "../../../editor/markdownEditor";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../../../ui/resizable";
+import { ScrollArea } from "../../../ui/scroll-area";
 import { CheckIcon } from "@radix-ui/react-icons";
 
 interface ILecture {

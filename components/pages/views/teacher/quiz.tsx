@@ -1,9 +1,8 @@
 "use client"
 
-import { useLessonIdContext } from "@/components/lessons/lessonContext"
-import IndividualQuiz from "../individualQuiz";
+import IndividualQuiz from "@/components/quiz/individualQuiz";
 import { useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon, PlusCircledIcon, PlusIcon, TrashIcon } from "@radix-ui/react-icons"
 import { FaSave } from "react-icons/fa";
 import { useToast } from "@/components/ui/use-toast";

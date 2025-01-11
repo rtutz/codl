@@ -2,22 +2,21 @@
 
 import { useEffect, useState } from "react"
 import { useLessonIdContext } from "@/components/lessons/lessonContext"
-import { Button } from "../ui/button"
-import Tab from "../tab"
-import MarkdownEditor from "../editor/markdownEditor"
-import MarkdownPreview from "../editor/markdownPreview"
-import AlertUI from "../error"
+import { Button } from "../../../ui/button"
+import MarkdownEditor from "../../../editor/markdownEditor"
+import MarkdownPreview from "../../../editor/markdownPreview"
+import AlertUI from "../../../common/error"
 import {
     Tabs,
     TabsContent,
     TabsList,
     TabsTrigger,
 } from "@/components/ui/tabs"
-import TestCases from "../coding/testCases"
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../ui/resizable"
-import { ScrollArea } from "../ui/scroll-area"
+import TestCases from "../../../coding/testCases"
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "../../../ui/resizable"
+import { ScrollArea } from "../../../ui/scroll-area"
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon, PlusCircledIcon, PlusIcon } from "@radix-ui/react-icons"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../../ui/tooltip"
 
 interface ICoding {
     lessonID: string;

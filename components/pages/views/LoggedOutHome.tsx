@@ -1,7 +1,7 @@
 "use client"
 
 import { Textarea } from "@/components/ui/textarea";
-import Login from "./auth/Login";
+import Login from "@/components/auth/Login";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

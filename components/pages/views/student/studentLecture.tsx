@@ -1,15 +1,14 @@
-import { Button } from "../ui/button";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { useState, useCallback, useRef } from "react";
-import MarkdownPreview from "../editor/markdownPreview";
+import MarkdownPreview from "@/components/editor/markdownPreview";
 import CodeMirror from '@uiw/react-codemirror';
 import { python, } from '@codemirror/lang-python';
 import { EditorView, ViewUpdate } from '@codemirror/view';
-import TerminalWindow from "../coding/terminal";
+import TerminalWindow from "@/components/coding/terminal";
 import { createTheme } from '@uiw/codemirror-themes';
 import { tags as t } from '@lezer/highlight';
 import { ScrollArea } from "@/components/ui/scroll-area"

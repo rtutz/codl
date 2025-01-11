@@ -1,8 +1,8 @@
 
-import LoggedInHome from "./LoggedInHome"
+import LoggedInHome from "../components/pages/views/LoggedInHome"
 import { getServerSession } from "next-auth"
 import { authOptions } from "../pages/api/auth/[...nextauth]"
-import LoggedOutHome from "./LoggedOutHome"
+import LoggedOutHome from "@/components/pages/views/LoggedOutHome"
 
 
 export default async function Home() {
